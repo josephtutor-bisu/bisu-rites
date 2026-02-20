@@ -89,21 +89,15 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                 </a>
             </li>
             <li class="sidebar-nav-item">
+                <a href="<?php echo $base_link; ?>rd_projects.php" class="sidebar-nav-link <?php echo $current_file == 'rd_projects.php' || $current_file == 'rd_project_add.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-flask-vial"></i>
+                    <span>Research Projects</span>
+                </a>
+            </li>
+            <li class="sidebar-nav-item">
                 <a href="#" class="sidebar-nav-link">
                     <i class="fas fa-users"></i>
-                    <span>My Researchers</span>
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-file-alt"></i>
-                    <span>Pending Proposals</span>
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-book"></i>
-                    <span>Published Papers</span>
+                    <span>Researchers</span>
                 </a>
             </li>
         <?php elseif ($_SESSION["role_id"] == 3): // ITSO Director Navigation ?>
