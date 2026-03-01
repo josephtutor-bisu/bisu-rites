@@ -3,36 +3,48 @@ session_start();
 require_once "../db_connect.php";
 
 // Check if user is logged in AND is R&D Director (Role ID 2)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 2){
-    header("location: ../login.php");
-    exit;
+if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 2){ 
+    header("location: ../login.php"); 
+    exit; 
 }
+
+// --- R&D STATISTICS ---
+
+// 1. Pending Proposals (Status = 'Submitted' or 'Under Review')
+$pending_count = 0;
+$pending_query = $conn->query("SELECT COUNT(*) as count FROM rd_projects WHERE status IN ('Submitted', 'Under Review')");
+if($pending_query) $pending_count = $pending_query->fetch_assoc()['count'];
+
+// 2. Active/Ongoing Projects
+$ongoing_count = 0;
+$ongoing_query = $conn->query("SELECT COUNT(*) as count FROM rd_projects WHERE status = 'Ongoing'");
+if($ongoing_query) $ongoing_count = $ongoing_query->fetch_assoc()['count'];
+
+// 3. Completed/Published Projects
+$completed_count = 0;
+$completed_query = $conn->query("SELECT COUNT(*) as count FROM rd_projects WHERE status IN ('Completed', 'Published')");
+if($completed_query) $completed_count = $completed_query->fetch_assoc()['count'];
 
 $page_title = "R&D Director Dashboard";
 include "../includes/header.php";
 ?>
 
-
-
-<div class="page-container">
+<div class="flex h-screen overflow-hidden bg-slate-50">
     <?php include "../includes/navigation.php"; ?>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        
-        <!-- Header -->
-        <div class="header">
-            <h1 class="header-title">
-                <i class="fas fa-flask" style="margin-right: 0.75rem; color: var(--primary);"></i>
-                R&D Director Dashboard
-            </h1>
-            <div class="header-actions">
-                <div class="user-profile">
-                    <div class="user-avatar"><?php echo strtoupper(substr($_SESSION["username"], 0, 1)); ?></div>
-                    <div class="user-info-text">
-                        <div class="user-name"><?php echo htmlspecialchars($_SESSION["username"]); ?></div>
-                        <div class="user-role">R&D Director</div>
-                    </div>
+    <div class="main-content flex-1 flex flex-col overflow-y-auto p-8">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">Research & Development Office</h1>
+                <p class="text-slate-500 text-sm mt-1">Review proposals and track institutional research progress.</p>
+            </div>
+            <div class="flex items-center space-x-4 bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-200">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div class="text-sm">
+                    <p class="text-slate-500 text-xs">Director Account</p>
+                    <p class="font-bold text-slate-800"><?php echo htmlspecialchars($_SESSION["username"]); ?></p>
                 </div>
                 <button class="btn btn-outline btn-sm" onclick="window.location.href='../logout.php'" style="margin-left: auto;">
                     <i class="fas fa-sign-out-alt"></i>
@@ -41,90 +53,78 @@ include "../includes/header.php";
             </div>
         </div>
 
-        <!-- Content Wrapper -->
-        <div class="content-wrapper content-wrapper-full">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             
-            <!-- Welcome Alert -->
-            <div class="alert alert-primary animate-fadeIn mb-6">
-                <i class="fas fa-info-circle alert-icon"></i>
-                <div class="alert-content">
-                    <h4>Welcome to R&D Office Dashboard</h4>
-                    <p>Manage research projects, proposals, and collaborate with your research team members.</p>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Pending Proposals</p>
+                    <h3 class="text-3xl font-bold text-slate-800"><?php echo $pending_count; ?></h3>
+                </div>
+                <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500 text-xl">
+                    <i class="fas fa-file-signature"></i>
                 </div>
             </div>
 
-            <!-- Statistics Grid -->
-            <div class="grid grid-cols-3">
-                <!-- Pending Proposals Card -->
-                <div class="stat-card animate-fadeIn">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-label">Pending Proposals</div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-footer">Awaiting review</div>
-                        </div>
-                        <div class="stat-card-icon" style="color: var(--primary);">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                    </div>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Active Researches</p>
+                    <h3 class="text-3xl font-bold text-slate-800"><?php echo $ongoing_count; ?></h3>
                 </div>
-
-                <!-- Active Projects Card -->
-                <div class="stat-card variant-secondary animate-fadeIn">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-label">Active Projects</div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-footer">Ongoing research</div>
-                        </div>
-                        <div class="stat-card-icon" style="color: var(--secondary);">
-                            <i class="fas fa-flask-vial"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Published Papers Card -->
-                <div class="stat-card variant-success animate-fadeIn">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-label">Published Papers</div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-footer">Disseminated findings</div>
-                        </div>
-                        <div class="stat-card-icon" style="color: var(--success);">
-                            <i class="fas fa-book"></i>
-                        </div>
-                    </div>
+                <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-xl">
+                    <i class="fas fa-spinner fa-spin-pulse"></i>
                 </div>
             </div>
 
-            <!-- Quick Actions Card -->
-            <div class="card mt-6 animate-fadeIn">
-                <div class="card-header">
-                    <h2>Quick Actions</h2>
-                    <p>Common R&D management tasks</p>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-emerald-500">
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Completed / Published</p>
+                    <h3 class="text-3xl font-bold text-slate-800"><?php echo $completed_count; ?></h3>
                 </div>
-                <div class="card-body">
-                    <div class="grid grid-cols-3">
-                        <button class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-blue-50 transition border-none bg-transparent cursor-pointer">
-                            <i class="fas fa-plus-circle text-2xl" style="color: var(--primary);"></i>
-                            <span class="text-sm font-semibold">New Proposal</span>
-                        </button>
-                        <button class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-purple-50 transition border-none bg-transparent cursor-pointer">
-                            <i class="fas fa-users text-2xl" style="color: var(--secondary);"></i>
-                            <span class="text-sm font-semibold">My Researchers</span>
-                        </button>
-                        <button class="flex flex-col items-center gap-2 p-4 rounded text-center hover:bg-green-50 transition border-none bg-transparent cursor-pointer">
-                            <i class="fas fa-chart-bar text-2xl" style="color: var(--success);"></i>
-                            <span class="text-sm font-semibold">View Reports</span>
-                        </button>
-                    </div>
+                <div class="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 text-xl">
+                    <i class="fas fa-check-circle"></i>
                 </div>
             </div>
-
         </div>
-    </div>
 
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-800">Action Required: Recent Submissions</h3>
+                <a href="rd_projects.php" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View All</a>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="text-xs text-slate-500 uppercase bg-slate-50">
+                        <tr>
+                            <th class="p-3">Project Title</th>
+                            <th class="p-3">College</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm divide-y divide-slate-100">
+                        <?php
+                        $recent = $conn->query("SELECT p.rd_id, p.project_title, p.status, c.college_code FROM rd_projects p LEFT JOIN colleges c ON p.college_id = c.college_id WHERE p.status IN ('Submitted', 'Under Review') ORDER BY p.rd_id DESC LIMIT 5");
+                        
+                        if($recent && $recent->num_rows > 0) {
+                            while($r = $recent->fetch_assoc()) {
+                                echo "<tr>";
+                                echo "<td class='p-3 font-medium text-slate-800'>" . htmlspecialchars($r['project_title']) . "</td>";
+                                echo "<td class='p-3 text-slate-600'>" . htmlspecialchars($r['college_code'] ?? 'N/A') . "</td>";
+                                echo "<td class='p-3'><span class='bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs font-semibold'>" . $r['status'] . "</span></td>";
+                                echo "<td class='p-3 text-right'><a href='rd_project_review.php?id=".$r['rd_id']."' class='text-blue-600 hover:underline'>Review</a></td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='4' class='p-6 text-center text-slate-500'>No new proposals waiting for review.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
 </div>
 
 <?php include "../includes/footer.php"; ?>

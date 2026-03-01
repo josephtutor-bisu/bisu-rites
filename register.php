@@ -97,13 +97,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" name="password" value="<?php echo $password; ?>">
             <span style="color:red"><?php echo $password_err; ?></span>
 
-            <label>Role / Office</label>
-            <select name="role_id">
-                <option value="2">R&D Director</option>
-                <option value="3">ITSO Director</option>
-                <option value="4">Extension Director</option>
-                <option value="5">Faculty</option>
+            <label>Role</label>
+            <select name="role_id" required>
+                <option value="">-- Select your role --</option>
+                <option value="8">Faculty</option>
+                <option value="9">Student</option>
             </select>
+
+            <input type="submit" value="Create Account">
+            <p style="margin-top:15px; text-align:center;">Already have an account? <a href="login.php">Login here</a>.</p>
+            </form>
+            </div>
+            </body>
+        </html>
 
             <input type="submit" value="Create Account">
             <p>Already have an account? <a href="login.php">Login here</a>.</p>

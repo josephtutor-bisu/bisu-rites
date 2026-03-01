@@ -46,33 +46,21 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="<?php echo $base_link; ?>admin_colleges.php" class="sidebar-nav-link <?php echo $current_file == 'admin_colleges.php' ? 'active' : ''; ?>">
+                <a href="<?php echo $base_link; ?>admin_colleges.php" class="sidebar-nav-link <?php echo strpos($current_file, 'admin_college') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-university"></i>
                     <span>Manage Colleges</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="<?php echo $base_link; ?>admin_users.php" class="sidebar-nav-link <?php echo $current_file == 'admin_users.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-users"></i>
+                <a href="<?php echo $base_link; ?>admin_users.php" class="sidebar-nav-link <?php echo strpos($current_file, 'admin_user') !== false ? 'active' : ''; ?>">
+                    <i class="fas fa-users-cog"></i>
                     <span>User Management</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
                 <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-flask"></i>
-                    <span>R&D Projects</span>
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>Innovation (ITSO)</span>
-                </a>
-            </li>
-            <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-handshake"></i>
-                    <span>Extension Services</span>
+                    <i class="fas fa-shield-alt"></i>
+                    <span>System Logs</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">

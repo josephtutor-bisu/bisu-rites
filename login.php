@@ -59,13 +59,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 case 3: // ITSO Director
                                     header("location: itso/itso_dashboard.php");
                                     break;
+                                // ... (other cases remain the same)
                                 case 4: // Extension Director
-                                    header("location: extension/extension_dashboard.php");
+                                header("location: extension/extension_dashboard.php"); // Update this if you put it in an extension folder
                                     break;
                                 default: // Faculty/Student
-                                    header("location: index.php");
+                                header("location: users/user_dashboard.php"); 
                                     break;
-                            }
+                    }
                         } else {
                             $login_err = "Invalid username or password.";
                         }
