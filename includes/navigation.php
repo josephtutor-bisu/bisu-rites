@@ -58,14 +58,14 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-shield-alt"></i>
+                <a href="<?php echo $base_link; ?>admin_system_logs.php" class="sidebar-nav-link <?php echo $current_file == 'admin_system_logs.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-clipboard-list"></i>
                     <span>System Logs</span>
                 </a>
             </li>
             <li class="sidebar-nav-item">
-                <a href="#" class="sidebar-nav-link">
-                    <i class="fas fa-cog"></i>
+                <a href="<?php echo $base_link; ?>admin_settings.php" class="sidebar-nav-link <?php echo $current_file == 'admin_settings.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-cogs"></i>
                     <span>Settings</span>
                 </a>
             </li>
