@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 01, 2026 at 01:55 AM
+-- Generation Time: Mar 22, 2026 at 10:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,13 +32,20 @@ CREATE TABLE `ip_assets` (
   `title` varchar(255) NOT NULL,
   `ip_type` enum('Patent','Utility Model','Industrial Design','Trademark','Copyright') NOT NULL,
   `application_number` varchar(100) DEFAULT NULL,
-  `status` enum('Disclosure Submitted','Drafting','Filed','Registered','Refused','Expired') DEFAULT 'Disclosure Submitted',
+  `status` enum('Draft','Disclosure Submitted','Under Review','Approved for Drafting','Filed','Registered','Refused','Expired','Rejected') DEFAULT 'Draft',
   `filing_date` date DEFAULT NULL,
   `registration_date` date DEFAULT NULL,
   `is_externally_funded` tinyint(1) DEFAULT 0,
   `funding_agency` varchar(255) DEFAULT NULL,
   `created_by_user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ip_assets`
+--
+
+INSERT INTO `ip_assets` (`ip_id`, `title`, `ip_type`, `application_number`, `status`, `filing_date`, `registration_date`, `is_externally_funded`, `funding_agency`, `created_by_user_id`) VALUES
+(1, 'Prototype X', 'Patent', '', 'Approved for Drafting', NULL, NULL, 0, NULL, 6);
 
 --
 -- Indexes for dumped tables
@@ -59,7 +66,7 @@ ALTER TABLE `ip_assets`
 -- AUTO_INCREMENT for table `ip_assets`
 --
 ALTER TABLE `ip_assets`
-  MODIFY `ip_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ip_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 01, 2026 at 01:53 AM
+-- Generation Time: Mar 22, 2026 at 10:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -38,10 +38,13 @@ CREATE TABLE `system_roles` (
 
 INSERT INTO `system_roles` (`role_id`, `role_name`) VALUES
 (4, 'Extension_Director'),
-(5, 'Faculty'),
+(7, 'Extension_Secretary'),
+(8, 'Faculty'),
 (3, 'ITSO_Director'),
+(6, 'ITSO_Secretary'),
 (2, 'RD_Director'),
-(6, 'Student'),
+(5, 'RD_Secretary'),
+(9, 'Student'),
 (1, 'Superadmin');
 
 --
@@ -63,7 +66,7 @@ ALTER TABLE `system_roles`
 -- AUTO_INCREMENT for table `system_roles`
 --
 ALTER TABLE `system_roles`
-  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

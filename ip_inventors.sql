@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 01, 2026 at 01:54 AM
+-- Generation Time: Mar 22, 2026 at 10:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -37,6 +37,13 @@ CREATE TABLE `ip_inventors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `ip_inventors`
+--
+
+INSERT INTO `ip_inventors` (`id`, `ip_id`, `user_id`, `external_name`, `contribution_percentage`, `task_assignment`) VALUES
+(1, 1, 6, NULL, 100.00, 'Main Developer');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -56,7 +63,7 @@ ALTER TABLE `ip_inventors`
 -- AUTO_INCREMENT for table `ip_inventors`
 --
 ALTER TABLE `ip_inventors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables

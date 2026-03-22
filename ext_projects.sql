@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 01, 2026 at 01:55 AM
+-- Generation Time: Mar 22, 2026 at 10:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -37,7 +37,8 @@ CREATE TABLE `ext_projects` (
   `source_of_funds` varchar(150) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
-  `service_status` enum('Completed','Not Completed','Needs Follow-up') DEFAULT 'Not Completed'
+  `service_status` enum('Draft','Proposed','Under Review','Approved','Ongoing','Completed','Not Completed','Needs Follow-up','Rejected') DEFAULT 'Draft',
+  `proposed_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -48,7 +49,8 @@ CREATE TABLE `ext_projects` (
 -- Indexes for table `ext_projects`
 --
 ALTER TABLE `ext_projects`
-  ADD PRIMARY KEY (`ext_id`);
+  ADD PRIMARY KEY (`ext_id`),
+  ADD KEY `proposed_by` (`proposed_by`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -59,6 +61,16 @@ ALTER TABLE `ext_projects`
 --
 ALTER TABLE `ext_projects`
   MODIFY `ext_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `ext_projects`
+--
+ALTER TABLE `ext_projects`
+  ADD CONSTRAINT `ext_projects_ibfk_1` FOREIGN KEY (`proposed_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 01, 2026 at 01:54 AM
+-- Generation Time: Mar 22, 2026 at 10:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -31,7 +31,7 @@ CREATE TABLE `rd_projects` (
   `rd_id` int(11) NOT NULL,
   `project_title` varchar(255) NOT NULL,
   `abstract` text DEFAULT NULL,
-  `status` enum('Proposed','Ongoing','Completed','Published','Deferred') DEFAULT 'Proposed',
+  `status` enum('Draft','Submitted','Under Review','Approved','Ongoing','Completed','Published','Deferred','Rejected') DEFAULT 'Draft',
   `budget` decimal(15,2) DEFAULT 0.00,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
@@ -44,7 +44,9 @@ CREATE TABLE `rd_projects` (
 
 INSERT INTO `rd_projects` (`rd_id`, `project_title`, `abstract`, `status`, `budget`, `start_date`, `end_date`, `college_id`) VALUES
 (1, 'Nutriwatch', 'An AI-Assisted Nutrition Monitoring for Bohol Public Primary Schools', 'Ongoing', 500000.00, '2025-10-20', '2027-03-20', 3),
-(2, 'Nutriwatch', 'abstract', 'Proposed', 0.01, '2026-02-02', '2026-02-23', 3);
+(5, 'Test', 'Test', 'Approved', 0.03, NULL, NULL, 3),
+(6, 'Excuse letter', 'Excuse me po', 'Under Review', 300000000.00, NULL, NULL, 3),
+(7, 'Proposal 1', 'This is the abstract', 'Under Review', 0.00, '2026-03-02', '2026-03-28', 3);
 
 --
 -- Indexes for dumped tables
@@ -65,7 +67,7 @@ ALTER TABLE `rd_projects`
 -- AUTO_INCREMENT for table `rd_projects`
 --
 ALTER TABLE `rd_projects`
-  MODIFY `rd_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `rd_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables

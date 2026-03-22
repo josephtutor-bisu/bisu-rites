@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 01, 2026 at 01:54 AM
+-- Generation Time: Mar 22, 2026 at 10:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,16 @@ CREATE TABLE `rd_proponents` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `rd_proponents`
+--
+
+INSERT INTO `rd_proponents` (`id`, `rd_id`, `user_id`, `project_role`) VALUES
+(1, 5, 6, 'Main Author'),
+(2, 6, 6, 'Main Author'),
+(3, 7, 7, 'Main Author'),
+(4, 7, 6, 'Co-Author');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -54,7 +64,7 @@ ALTER TABLE `rd_proponents`
 -- AUTO_INCREMENT for table `rd_proponents`
 --
 ALTER TABLE `rd_proponents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables

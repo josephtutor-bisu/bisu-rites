@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2026 at 10:40 AM
+-- Generation Time: Mar 22, 2026 at 10:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,17 +24,16 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `ext_monitoring`
+-- Table structure for table `system_logs`
 --
 
-CREATE TABLE `ext_monitoring` (
-  `monitor_id` int(11) NOT NULL,
-  `ext_id` int(11) NOT NULL,
-  `target_outcome` text DEFAULT NULL,
-  `achieved_outcome` text DEFAULT NULL,
-  `unmet_outcomes` text DEFAULT NULL,
-  `risk_assessment` text DEFAULT NULL,
-  `recommendation` enum('Continue','Modify','End Program') DEFAULT 'Continue'
+CREATE TABLE `system_logs` (
+  `log_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `action_type` varchar(50) NOT NULL,
+  `action_details` text NOT NULL,
+  `ip_address` varchar(50) DEFAULT NULL,
+  `log_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -42,31 +41,31 @@ CREATE TABLE `ext_monitoring` (
 --
 
 --
--- Indexes for table `ext_monitoring`
+-- Indexes for table `system_logs`
 --
-ALTER TABLE `ext_monitoring`
-  ADD PRIMARY KEY (`monitor_id`),
-  ADD KEY `ext_id` (`ext_id`);
+ALTER TABLE `system_logs`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT for table `ext_monitoring`
+-- AUTO_INCREMENT for table `system_logs`
 --
-ALTER TABLE `ext_monitoring`
-  MODIFY `monitor_id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `system_logs`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `ext_monitoring`
+-- Constraints for table `system_logs`
 --
-ALTER TABLE `ext_monitoring`
-  ADD CONSTRAINT `ext_monitoring_ibfk_1` FOREIGN KEY (`ext_id`) REFERENCES `ext_projects` (`ext_id`) ON DELETE CASCADE;
+ALTER TABLE `system_logs`
+  ADD CONSTRAINT `system_logs_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

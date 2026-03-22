@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2026 at 10:39 AM
+-- Generation Time: Mar 22, 2026 at 10:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -24,44 +24,33 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `colleges`
+-- Table structure for table `system_settings`
 --
 
-CREATE TABLE `colleges` (
-  `college_id` int(11) NOT NULL,
-  `college_code` varchar(20) NOT NULL,
-  `college_name` varchar(100) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+CREATE TABLE `system_settings` (
+  `setting_key` varchar(50) NOT NULL,
+  `setting_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `colleges`
+-- Dumping data for table `system_settings`
 --
 
-INSERT INTO `colleges` (`college_id`, `college_code`, `college_name`, `created_at`) VALUES
-(1, 'ADMIN', 'System Administration', '2026-02-10 00:28:31'),
-(3, 'COS', 'College of Sciences', '2026-02-20 12:53:59');
+INSERT INTO `system_settings` (`setting_key`, `setting_value`) VALUES
+('academic_year', '2023-2024'),
+('maintenance_mode', '0'),
+('system_name', 'R.I.T.E.S Management System'),
+('university_name', 'Bohol Island State University');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `colleges`
+-- Indexes for table `system_settings`
 --
-ALTER TABLE `colleges`
-  ADD PRIMARY KEY (`college_id`),
-  ADD UNIQUE KEY `college_code` (`college_code`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `colleges`
---
-ALTER TABLE `colleges`
-  MODIFY `college_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+ALTER TABLE `system_settings`
+  ADD PRIMARY KEY (`setting_key`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
