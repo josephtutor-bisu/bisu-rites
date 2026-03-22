@@ -71,15 +71,70 @@ if ($r) { while ($row = $r->fetch_assoc()) $ext_chart_data[$row['service_status'
         
         .stats-card {
             background: white;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
+            border-top: 4px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
         .stats-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.12);
+        }
+        
+        .stats-card:hover::before {
+            opacity: 1;
+        }
+        
+        .stats-card:nth-child(1) {
+            border-top-color: var(--primary);
+        }
+        
+        .stats-card:nth-child(2) {
+            border-top-color: var(--secondary);
+        }
+        
+        .stats-card:nth-child(3) {
+            border-top-color: var(--success);
+        }
+
+        .feature-box {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-box:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-box:hover .feature-icon {
+            transform: scale(1.1);
         }
         
         .stats-number {
@@ -241,7 +296,7 @@ if ($r) { while ($row = $r->fetch_assoc()) $ext_chart_data[$row['service_status'
             <!-- Visual Charts -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- R&D Status Chart -->
-                <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition">
                     <h4 class="text-lg font-bold text-gray-800 mb-1 text-center">Research by Status</h4>
                     <p class="text-xs text-gray-400 text-center mb-4">Distribution of project statuses</p>
                     <div class="relative" style="height: 220px;">
@@ -253,7 +308,7 @@ if ($r) { while ($row = $r->fetch_assoc()) $ext_chart_data[$row['service_status'
                 </div>
 
                 <!-- IP Type Chart -->
-                <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition">
                     <h4 class="text-lg font-bold text-gray-800 mb-1 text-center">IP Assets by Type</h4>
                     <p class="text-xs text-gray-400 text-center mb-4">Breakdown of intellectual property</p>
                     <div class="relative" style="height: 220px;">
@@ -265,7 +320,7 @@ if ($r) { while ($row = $r->fetch_assoc()) $ext_chart_data[$row['service_status'
                 </div>
 
                 <!-- Extension Status Chart -->
-                <div class="bg-white rounded-xl p-6 shadow-md">
+                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition">
                     <h4 class="text-lg font-bold text-gray-800 mb-1 text-center">Extension by Status</h4>
                     <p class="text-xs text-gray-400 text-center mb-4">Distribution of program statuses</p>
                     <div class="relative" style="height: 220px;">
@@ -279,91 +334,32 @@ if ($r) { while ($row = $r->fetch_assoc()) $ext_chart_data[$row['service_status'
         </div>
     </section>
 
-    <!-- Published Works Section -->
-    <section id="publications" class="py-20 bg-white">
+    <!-- System Highlights Section -->
+    <section class="py-20 bg-white">
         <div class="container mx-auto px-4">
-            <h2 class="text-4xl font-bold text-center mb-4">Published Works & Accomplishments</h2>
-            <p class="text-gray-500 text-center mb-16 max-w-2xl mx-auto">Browse completed research, registered innovations, and successful extension programs at BISU.</p>
-
-            <!-- Published Research -->
-            <div class="mb-16">
-                <div class="flex items-center mb-6">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg mr-3" style="background: var(--primary);"><i class="fas fa-flask-vial"></i></div>
-                    <h3 class="text-2xl font-bold text-gray-800">Published / Completed Research</h3>
+            <h2 class="text-4xl font-bold text-center mb-4">System Highlights</h2>
+            <p class="text-gray-500 text-center mb-16 max-w-2xl mx-auto">Discover what makes BISU R.I.T.E.S a leader in research and innovation.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="feature-box">
+                    <div class="feature-icon" style="color: var(--primary);"><i class="fas fa-chart-line"></i></div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Comprehensive Tracking</h3>
+                    <p class="text-gray-600 text-sm">Monitor all research, innovations, and extension projects in one unified system</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <?php if($published_research && $published_research->num_rows > 0): ?>
-                        <?php while($row = $published_research->fetch_assoc()): ?>
-                        <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 hover:shadow-md" style="transition: box-shadow 0.2s ease;">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-semibold px-2 py-1 rounded-full <?php echo $row['status'] === 'Published' ? 'bg-cyan-100 text-cyan-800' : 'bg-green-100 text-green-800'; ?>">
-                                    <?php echo htmlspecialchars($row['status']); ?>
-                                </span>
-                                <?php if($row['college_code']): ?>
-                                <span class="text-xs text-gray-400"><?php echo htmlspecialchars($row['college_code']); ?></span>
-                                <?php endif; ?>
-                            </div>
-                            <h4 class="font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($row['project_title']); ?></h4>
-                            <p class="text-gray-500 text-sm line-clamp-3"><?php echo htmlspecialchars(substr($row['abstract'] ?? '', 0, 150)); ?><?php echo strlen($row['abstract'] ?? '') > 150 ? '...' : ''; ?></p>
-                        </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <div class="col-span-full text-center py-8 text-gray-400"><i class="fas fa-flask text-4xl mb-3 block"></i><p>No published research yet.</p></div>
-                    <?php endif; ?>
+                <div class="feature-box">
+                    <div class="feature-icon" style="color: var(--secondary);"><i class="fas fa-users"></i></div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Collaboration Hub</h3>
+                    <p class="text-gray-600 text-sm">Facilitate seamless collaboration between researchers, innovators, and extension partners</p>
                 </div>
-            </div>
-
-            <!-- Registered Innovations -->
-            <div class="mb-16">
-                <div class="flex items-center mb-6">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg mr-3" style="background: var(--secondary);"><i class="fas fa-lightbulb"></i></div>
-                    <h3 class="text-2xl font-bold text-gray-800">Registered Innovations & IP</h3>
+                <div class="feature-box">
+                    <div class="feature-icon" style="color: var(--success);"><i class="fas fa-shield-alt"></i></div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Secure Management</h3>
+                    <p class="text-gray-600 text-sm">Protect intellectual property and sensitive project information with role-based access</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <?php if($registered_ips && $registered_ips->num_rows > 0): ?>
-                        <?php while($row = $registered_ips->fetch_assoc()): ?>
-                        <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 hover:shadow-md" style="transition: box-shadow 0.2s ease;">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-semibold px-2 py-1 rounded-full <?php echo $row['status'] === 'Registered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'; ?>">
-                                    <?php echo htmlspecialchars($row['status']); ?>
-                                </span>
-                                <span class="text-xs text-gray-400"><?php echo htmlspecialchars($row['ip_type']); ?></span>
-                            </div>
-                            <h4 class="font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($row['title']); ?></h4>
-                            <?php if($row['registration_date']): ?>
-                            <p class="text-gray-500 text-sm"><i class="fas fa-calendar-check mr-1"></i>Registered: <?php echo date('M d, Y', strtotime($row['registration_date'])); ?></p>
-                            <?php endif; ?>
-                        </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <div class="col-span-full text-center py-8 text-gray-400"><i class="fas fa-lightbulb text-4xl mb-3 block"></i><p>No registered innovations yet.</p></div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Completed Extension Programs -->
-            <div>
-                <div class="flex items-center mb-6">
-                    <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg mr-3" style="background: var(--success);"><i class="fas fa-handshake"></i></div>
-                    <h3 class="text-2xl font-bold text-gray-800">Completed Extension Programs</h3>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <?php if($completed_ext && $completed_ext->num_rows > 0): ?>
-                        <?php while($row = $completed_ext->fetch_assoc()): ?>
-                        <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 hover:shadow-md" style="transition: box-shadow 0.2s ease;">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-green-100 text-green-800">Completed</span>
-                                <?php if($row['program_name']): ?>
-                                <span class="text-xs text-gray-400"><?php echo htmlspecialchars($row['program_name']); ?></span>
-                                <?php endif; ?>
-                            </div>
-                            <h4 class="font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($row['project_title']); ?></h4>
-                            <p class="text-gray-500 text-sm"><i class="fas fa-users mr-1"></i>Beneficiary: <?php echo htmlspecialchars($row['beneficiary_name']); ?></p>
-                        </div>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <div class="col-span-full text-center py-8 text-gray-400"><i class="fas fa-handshake text-4xl mb-3 block"></i><p>No completed extension programs yet.</p></div>
-                    <?php endif; ?>
+                <div class="feature-box">
+                    <div class="feature-icon" style="color: #f59e0b;"><i class="fas fa-rocket"></i></div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Innovation Pipeline</h3>
+                    <p class="text-gray-600 text-sm">Support the complete journey from research concept to market-ready innovation</p>
                 </div>
             </div>
         </div>

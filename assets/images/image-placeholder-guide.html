@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Placeholder Guide - BISU R.I.T.E.S</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f9fafb;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .guide-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: #1f2937;
+            margin-bottom: 16px;
+            font-size: 20px;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 12px;
+        }
+        
+        h3 {
+            color: #374151;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .code-block {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin: 16px 0;
+        }
+        
+        .option-box {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin: 16px 0;
+            border-radius: 4px;
+        }
+        
+        .option-box strong {
+            color: #1e40af;
+        }
+        
+        .step-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        
+        .step-list li {
+            counter-increment: step-counter;
+            padding: 12px 0;
+            padding-left: 40px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+        
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #3b82f6;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .preview-box {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            aspect-ratio: 16 / 9;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            margin: 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+        
+        .preview-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .preview-content h3 {
+            margin: 0;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .preview-content p {
+            opacity: 0.9;
+            margin-top: 8px;
+        }
+        
+        .url-list {
+            background: #f3f4f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+        }
+        
+        .url-list li {
+            margin-bottom: 8px;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .url-list li::before {
+            content: '📧';
+            position: absolute;
+            left: 0;
+        }
+        
+        .url-list li:last-child {
+            margin-bottom: 0;
+        }
+        
+        a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        
+        .feature-card {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .feature-card h4 {
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+        
+        .feature-card p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .success-badge {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Image Placeholder Guide</h1>
+        <p class="subtitle">Setup and use images in the BISU R.I.T.E.S login page</p>
+        
+        <div class="guide-section">
+            <h2>Current Login Page Preview</h2>
+            <p>This is how your login page will look with the background image:</p>
+            <div class="preview-box">
+                <div class="preview-content">
+                    <h3>BISU R.I.T.E.S</h3>
+                    <p>Research, Innovation, and Extension System</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="guide-section">
+            <h2>📁 File Location</h2>
+            <p><strong>Expected file path:</strong></p>
+            <div class="code-block">
+/assets/images/login-cover.jpg
+            </div>
+            <p><strong>Full path:</strong> <code>d:\Files\htdocs\bisu-rites\assets\images\login-cover.jpg</code></p>
+        </div>
+        
+        <div class="guide-section">
+            <h2>🎯 Image Requirements</h2>
+            
+            <h3>Specifications</h3>
+            <ul class="step-list">
+                <li><strong>Filename:</strong> login-cover.jpg</li>
+                <li><strong>Resolution:</strong> 1920x1080 pixels (or higher)</li>
+                <li><strong>Format:</strong> JPG (JPEG)</li>
+                <li><strong>File Size:</strong> 200-500 KB (optimize for web)</li>
+                <li><strong>Aspect Ratio:</strong> 16:9 (recommended)</li>
+            </ul>
+            
+            <h3>Content Recommendations</h3>
+            <ul class="step-list">
+                <li>Professional academic or laboratory setting</li>
+                <li>BISU campus imagery or logo</li>
+                <li>Good contrast with blue gradient (#1e3c72 to #2a5298)</li>
+                <li>University or research-related imagery</li>
+                <li>High quality, no overly bright colors</li>
+            </ul>
+        </div>
+        
+        <div class="guide-section">
+            <h2>🔍 Image Sources</h2>
+            
+            <h3>Option 1: BISU Official Resources</h3>
+            <div class="option-box">
+                <strong>Website:</strong> <a href="https://bisucandijay.edu.ph/" target="_blank">https://bisucandijay.edu.ph/</a><br>
+                <strong>How to use:</strong>
+                <ol class="step-list">
+                    <li>Visit the website and find suitable images in galleries or hero sections</li>
+                    <li>Right-click the image → "Save image as"</li>
+                    <li>Save to <code>assets/images/login-cover.jpg</code></li>
+                    <li>Optimize the image using TinyJPG if needed</li>
+                </ol>
+            </div>
+            
+            <h3>Option 2: Free Stock Photo Sites</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>🎨 Unsplash</h4>
+                    <p><a href="https://unsplash.com/search/photos/university" target="_blank">unsplash.com</a> - Search: "university", "laboratory", "research"</p>
+                </div>
+                <div class="feature-card">
+                    <h4>📸 Pexels</h4>
+                    <p><a href="https://pexels.com/search/campus/" target="_blank">pexels.com</a> - Search: "campus", "office", "study"</p>
+                </div>
+                <div class="feature-card">
+                    <h4>🖼️ Pixabay</h4>
+                    <p><a href="https://pixabay.com/search/university/" target="_blank">pixabay.com</a> - Search: "university", "teaching", "learning"</p>
+                </div>
+            </div>
+            
+            <h3>Option 3: Use Canva (Design Tool)</h3>
+            <div class="option-box">
+                <strong>Website:</strong> <a href="https://canva.com" target="_blank">https://canva.com</a><br>
+                <strong>How to use:</strong>
+                <ol class="step-list">
+                    <li>Create a new design (1920x1080 dimension)</li>
+                    <li>Search for "university", "research", or "campus" templates</li>
+                    <li>Customize with BISU colors and text</li>
+                    <li>Download as JPG</li>
+                    <li>Save to <code>assets/images/login-cover.jpg</code></li>
+                </ol>
+            </div>
+            
+            <h3>Option 4: Professional Design Service</h3>
+            <div class="option-box">
+                <strong>Services:</strong>
+                <ul class="step-list">
+                    <li>Hire a graphic designer (Fiverr, Upwork, local agencies)</li>
+                    <li>Use Adobe Stock for premium images</li>
+                    <li>Contact <strong>BISU Marketing/Communications Office</strong> for official materials</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="guide-section">
+            <h2>⚙️ Image Optimization</h2>
+            
+            <h3>Compress for Web Performance</h3>
+            <div class="option-box">
+                <strong>Tools:</strong>
+                <ul class="step-list">
+                    <li><a href="https://tinyjpg.com" target="_blank">TinyJPG.com</a> - Recommended, free compression</li>
+                    <li><a href="https://imageoptimizer.net" target="_blank">ImageOptimizer.net</a> - Batch processing</li>
+                    <li><a href="https://www.iloveimg.com/compress-image" target="_blank">iLoveIMG</a> - Simple and fast</li>
+                </ul>
+            </div>
+            
+            <h3>Compression Steps</h3>
+            <ol class="step-list">
+                <li>Go to TinyJPG.com (or similar tool)</li>
+                <li>Upload your image</li>
+                <li>Wait for compression (typically 70-80% reduction)</li>
+                <li>Download the compressed file</li>
+                <li>Save as <code>login-cover.jpg</code></li>
+            </ol>
+        </div>
+        
+        <div class="guide-section">
+            <h2>✅ Implementation Checklist</h2>
+            <ol class="step-list">
+                <li>Create the folder: <code>assets/images/</code></li>
+                <li>Find or create an appropriate image (1920x1080 JPG)</li>
+                <li>Compress the image using TinyJPG</li>
+                <li>Save as <code>login-cover.jpg</code> in the images folder</li>
+                <li>Open <code>login.php</code> in your browser</li>
+                <li>The image should appear on the left side of the login page</li>
+            </ol>
+        </div>
+        
+        <div class="guide-section">
+            <h2>🐛 Troubleshooting</h2>
+            
+            <h3>Image Not Showing</h3>
+            <ul class="step-list">
+                <li>Check the file exists in <code>assets/images/login-cover.jpg</code></li>
+                <li>Verify filename is exactly <code>login-cover.jpg</code> (case sensitive on some servers)</li>
+                <li>Clear browser cache: Press <strong>Ctrl+Shift+Del</strong></li>
+                <li>Try a hard refresh: Press <strong>Ctrl+Shift+R</strong></li>
+                <li>Check file size (some servers limit to 20MB)</li>
+            </ul>
+            
+            <h3>Image Looks Stretched or Distorted</h3>
+            <ul class="step-list">
+                <li>Use image with 16:9 aspect ratio</li>
+                <li>Crop to 1920x1080 before saving</li>
+                <li>Use a photo editing tool (Photoshop, GIMP, or online tools)</li>
+            </ul>
+            
+            <h3>Image Takes Too Long to Load</h3>
+            <ul class="step-list">
+                <li>Compress using TinyJPG</li>
+                <li>Target file size: 200-400 KB</li>
+                <li>Consider using a CDN for image hosting (future enhancement)</li>
+            </ul>
+        </div>
+        
+        <div class="guide-section">
+            <h2>📧 Support & Resources</h2>
+            
+            <h3>Contact Information</h3>
+            <ul class="url-list">
+                <li><strong>BISU Main Website:</strong> <a href="https://bisucandijay.edu.ph/" target="_blank">bisucandijay.edu.ph</a></li>
+                <li><strong>Design Support:</strong> Contact BISU Marketing/Communications Office</li>
+                <li><strong>Technical Issues:</strong> Check file path and browser console (F12)</li>
+            </ul>
+        </div>
+        
+        <div class="guide-section">
+            <h2>💡 Additional Features</h2>
+            <p>Your two-column login page includes:</p>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Responsive Design</h4>
+                    <p>On mobile devices, the image hides and shows only the form (stacks vertically)</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Gradient Overlay</h4>
+                    <p>Blue gradient ensures text remains readable over any background image</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Professional Styling</h4>
+                    <p>Modern design with smooth transitions and hover effects</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Light/Dark Mode Ready</h4>
+                    <p>Easy to customize colors for different themes</p>
+                </div>
+                <div class="feature-card">
+                    <h4>Accessibility</h4>
+                    <p>High contrast ratios for text readability on all backgrounds</p>
+                </div>
+                <div class="feature-card">
+                    <h4>SEO Friendly</h4>
+                    <p>Proper HTML structure and semantic markup</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

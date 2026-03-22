@@ -52,9 +52,131 @@ if($ip_type_query) {
     }
 }
 
+// --- PREVIEW DATA FOR HOVER POPUPS ---
+$pending_preview = [];
+$pending_preview_query = $conn->query("SELECT ip_id, title, status FROM ip_assets WHERE status IN ('Disclosure Submitted', 'Under Review') ORDER BY ip_id DESC LIMIT 5");
+if($pending_preview_query) {
+    while($row = $pending_preview_query->fetch_assoc()) {
+        $pending_preview[] = $row;
+    }
+}
+
+$active_preview = [];
+$active_preview_query = $conn->query("SELECT ip_id, title, status FROM ip_assets WHERE status IN ('Approved for Drafting', 'Filed') ORDER BY ip_id DESC LIMIT 5");
+if($active_preview_query) {
+    while($row = $active_preview_query->fetch_assoc()) {
+        $active_preview[] = $row;
+    }
+}
+
+$registered_preview = [];
+$registered_preview_query = $conn->query("SELECT ip_id, title, status FROM ip_assets WHERE status = 'Registered' ORDER BY ip_id DESC LIMIT 5");
+if($registered_preview_query) {
+    while($row = $registered_preview_query->fetch_assoc()) {
+        $registered_preview[] = $row;
+    }
+}
+
+$comm_preview = [];
+$comm_preview_query = $conn->query("SELECT c.comm_id, a.title, c.status FROM ip_commercialization c JOIN ip_assets a ON c.ip_id = a.ip_id WHERE c.status = 'Pending' ORDER BY c.comm_id DESC LIMIT 5");
+if($comm_preview_query) {
+    while($row = $comm_preview_query->fetch_assoc()) {
+        $comm_preview[] = $row;
+    }
+}
+
 $page_title = "ITSO Director Dashboard";
 include "../includes/header.php";
 ?>
+
+<style>
+.stat-card {
+    position: relative;
+    isolation: isolate;
+}
+
+.preview-popup {
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    top: auto;
+    transform: translateX(-50%) scale(0.95);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    min-width: 320px;
+    max-width: 360px;
+    margin-bottom: 12px;
+    z-index: 50;
+    pointer-events: none;
+    white-space: normal;
+}
+
+.stat-card:hover .preview-popup,
+.stat-card.show-preview .preview-popup {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateX(-50%) scale(1) !important;
+    pointer-events: auto !important;
+}
+
+.preview-header {
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #1f2937;
+}
+
+.preview-list {
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.preview-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.preview-item:last-child {
+    border-bottom: none;
+}
+
+.preview-item:hover {
+    background-color: #f9fafb;
+}
+
+.preview-item-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1f2937;
+    white-space: normal;
+    word-wrap: break-word;
+    margin-bottom: 0.25rem;
+}
+
+.preview-item-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.preview-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #f3f4f6;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+</style>
 
 <div class="flex h-screen overflow-hidden bg-slate-50">
     <?php include "../includes/navigation.php"; ?>
@@ -82,7 +204,23 @@ include "../includes/header.php";
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             
-            <a href="itso_assets.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500 hover:shadow-md hover:border-amber-300 transition-all cursor-pointer">
+            <a href="itso_assets.php" class="stat-card group relative bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500 hover:shadow-md hover:border-amber-300 transition-all cursor-pointer">
+                <div class="preview-popup">
+                    <div class="preview-header">📝 Pending Disclosures</div>
+                    <div class="preview-list">
+                        <?php if(!empty($pending_preview)): ?>
+                            <?php foreach($pending_preview as $item): ?>
+                            <div class="preview-item">
+                                <div class="preview-item-title"><?php echo htmlspecialchars(substr($item['title'], 0, 45)); ?></div>
+                                <span class="preview-item-status" style="background-color: #fef3c7; color: #b45309;"><?php echo $item['status']; ?></span>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                        <div style="padding: 1rem; text-align: center; color: #9ca3af; font-size: 0.875rem;">No pending disclosures</div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="preview-footer">View all disclosures →</div>
+                </div>
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Pending Disclosures</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $pending_count; ?></h3>
@@ -92,7 +230,23 @@ include "../includes/header.php";
                 </div>
             </a>
 
-            <a href="itso_assets.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
+            <a href="itso_assets.php" class="stat-card group relative bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
+                <div class="preview-popup">
+                    <div class="preview-header">📋 In Process / Filed</div>
+                    <div class="preview-list">
+                        <?php if(!empty($active_preview)): ?>
+                            <?php foreach($active_preview as $item): ?>
+                            <div class="preview-item">
+                                <div class="preview-item-title"><?php echo htmlspecialchars(substr($item['title'], 0, 45)); ?></div>
+                                <span class="preview-item-status" style="background-color: #dbeafe; color: #1e40af;"><?php echo $item['status']; ?></span>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                        <div style="padding: 1rem; text-align: center; color: #9ca3af; font-size: 0.875rem;">No items in process</div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="preview-footer">View all items →</div>
+                </div>
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">In Process / Filed</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $active_count; ?></h3>
@@ -102,7 +256,23 @@ include "../includes/header.php";
                 </div>
             </a>
 
-            <a href="itso_assets.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-teal-500 hover:shadow-md hover:border-teal-300 transition-all cursor-pointer">
+            <a href="itso_assets.php" class="stat-card group relative bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-teal-500 hover:shadow-md hover:border-teal-300 transition-all cursor-pointer">
+                <div class="preview-popup">
+                    <div class="preview-header">✅ Registered IPs</div>
+                    <div class="preview-list">
+                        <?php if(!empty($registered_preview)): ?>
+                            <?php foreach($registered_preview as $item): ?>
+                            <div class="preview-item">
+                                <div class="preview-item-title"><?php echo htmlspecialchars(substr($item['title'], 0, 45)); ?></div>
+                                <span class="preview-item-status" style="background-color: #ccfbf1; color: #0d9488;"><?php echo $item['status']; ?></span>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                        <div style="padding: 1rem; text-align: center; color: #9ca3af; font-size: 0.875rem;">No registered IPs yet</div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="preview-footer">View all IPs →</div>
+                </div>
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Registered IPs</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $registered_count; ?></h3>
@@ -112,7 +282,23 @@ include "../includes/header.php";
                 </div>
             </a>
 
-            <a href="itso_commercialization.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-purple-500 hover:shadow-md hover:border-purple-300 transition-all cursor-pointer">
+            <a href="itso_commercialization.php" class="stat-card group relative bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-purple-500 hover:shadow-md hover:border-purple-300 transition-all cursor-pointer">
+                <div class="preview-popup">
+                    <div class="preview-header">💼 Pending Commercialization</div>
+                    <div class="preview-list">
+                        <?php if(!empty($comm_preview)): ?>
+                            <?php foreach($comm_preview as $item): ?>
+                            <div class="preview-item">
+                                <div class="preview-item-title"><?php echo htmlspecialchars(substr($item['title'], 0, 45)); ?></div>
+                                <span class="preview-item-status" style="background-color: #f3e8ff; color: #7c3aed;"><?php echo $item['status']; ?></span>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                        <div style="padding: 1rem; text-align: center; color: #9ca3af; font-size: 0.875rem;">No pending commercialization</div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="preview-footer">View all requests →</div>
+                </div>
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Pending Commercialization</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $comm_count; ?></h3>
@@ -270,4 +456,34 @@ if(commLabels.length > 0) {
 } else {
     document.getElementById('commStatusChart').parentElement.innerHTML += '<p class="text-center text-slate-400 mt-4">No requests yet.</p>';
 }
+
+// Initialize popup hover behavior for stat cards
+document.querySelectorAll('.stat-card').forEach(card => {
+    const popup = card.querySelector('.preview-popup');
+    if (!popup) return;
+    
+    card.addEventListener('mouseenter', function() {
+        const rect = card.getBoundingClientRect();
+        const popupRect = popup.getBoundingClientRect();
+        const spaceAbove = rect.top;
+        const spaceBelow = window.innerHeight - rect.bottom;
+        
+        // Reset popup position and check space
+        popup.style.bottom = 'auto';
+        popup.style.top = 'auto';
+        
+        // If not enough space above, position below instead
+        if (spaceAbove < 300 && spaceBelow > 300) {
+            popup.style.top = '100%';
+            popup.style.bottom = 'auto';
+            popup.style.marginBottom = '0';
+            popup.style.marginTop = '12px';
+        } else {
+            popup.style.bottom = '100%';
+            popup.style.top = 'auto';
+            popup.style.marginTop = '0';
+            popup.style.marginBottom = '12px';
+        }
+    });
+});
 </script>
