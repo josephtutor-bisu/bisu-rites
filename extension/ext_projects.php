@@ -2,7 +2,7 @@
 session_start();
 require_once "../db_connect.php";
 
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 4){ header("location: ../login.php"); exit; }
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [4, 7])){ header("location: ../login.php"); exit; }
 
 // Fetch Extension Projects and join with Proponents to get the Project Leader
 $sql = "SELECT e.*, CONCAT(u.first_name, ' ', u.last_name) AS leader_name 
@@ -53,7 +53,7 @@ include "../includes/header.php";
                                 
                                 echo "<tr class='border-b border-slate-100 hover:bg-slate-50 transition'>";
                                 echo "<td class='p-4 text-slate-500'>EXT-" . $row["ext_id"] . "</td>";
-                                echo "<td class='p-4 font-medium text-slate-800'>" . htmlspecialchars(substr($row["project_title"], 0, 40)) . "...</td>";
+                                echo "<td class='p-4 font-medium text-slate-800'>" . htmlspecialchars(substr($row["project_title"], 0, 40)) . (strlen($row["project_title"]) > 40 ? "..." : "") . "</td>";
                                 echo "<td class='p-4 text-slate-600'>" . ($row["leader_name"] ? htmlspecialchars($row["leader_name"]) : '<span class="italic text-slate-400">System Encoded</span>') . "</td>";
                                 echo "<td class='p-4 text-slate-600'>" . htmlspecialchars(substr($row["beneficiary_name"], 0, 30)) . "</td>";
                                 echo "<td class='p-4'><span class='px-2 py-1 rounded-full text-xs font-semibold {$statusColor}'>" . $row["service_status"] . "</span></td>";

@@ -11,7 +11,7 @@ $colleges_result = $conn->query("SELECT college_id, college_name FROM colleges W
 
 // Fetch eligible users (Faculty = 8, Student = 9) to populate the team dropdown
 // We exclude the currently logged-in user since they are automatically the Main Author.
-$users_sql = "SELECT user_id, first_name, last_name, role_id FROM users WHERE role_id IN (5, 6) AND user_id != ? ORDER BY last_name ASC";
+$users_sql = "SELECT user_id, first_name, last_name, role_id FROM users WHERE role_id IN (8, 9) AND user_id != ? ORDER BY last_name ASC";
 $ustmt = $conn->prepare($users_sql);
 $ustmt->bind_param("i", $_SESSION['id']);
 $ustmt->execute();
@@ -137,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <textarea name="abstract" rows="4" class="w-full border border-slate-300 rounded p-2 focus:ring-blue-500"></textarea>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">Lead College *</label>
                             <select name="college_id" required class="w-full border border-slate-300 rounded p-2 focus:ring-blue-500">
@@ -151,6 +151,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 ?>
                             </select>
                         </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Proposed Budget (₱)</label>
+                            <input type="number" step="0.01" min="0" name="budget" class="w-full border border-slate-300 rounded p-2 focus:ring-blue-500" placeholder="e.g. 50000.00">
+                        </div>
+
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Start Date</label>
                             <input type="date" name="start_date" class="w-full border border-slate-300 rounded p-2 focus:ring-blue-500">

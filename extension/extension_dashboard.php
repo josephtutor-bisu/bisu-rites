@@ -3,10 +3,7 @@ session_start();
 require_once "../db_connect.php";
 
 // Check if user is logged in AND is Extension Director (Role ID 4)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 4){ 
-    header("location: ../login.php"); 
-    exit; 
-}
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [4, 7])){ header("location: ../login.php"); exit; }
 
 // --- EXTENSION STATISTICS ---
 
@@ -61,7 +58,7 @@ include "../includes/header.php";
                     <i class="fas fa-handshake"></i>
                 </div>
                 <div class="text-sm">
-                    <p class="text-slate-500 text-xs">Director Account</p>
+                    <p class="text-slate-500 text-xs"><?php echo $_SESSION['role_id'] == 4 ? 'Director Account' : 'Secretary Account'; ?></p>
                     <p class="font-bold text-slate-800"><?php echo htmlspecialchars($_SESSION["username"]); ?></p>
                 </div>
                 <button class="btn btn-outline btn-sm" onclick="window.location.href='../logout.php'" style="margin-left: auto;">
@@ -73,35 +70,35 @@ include "../includes/header.php";
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500">
+            <a href="ext_projects.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500 hover:shadow-md hover:border-amber-300 transition-all cursor-pointer">
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Pending Proposals</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $pending_count; ?></h3>
                 </div>
-                <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500 text-xl">
+                <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500 text-xl group-hover:bg-amber-100 transition">
                     <i class="fas fa-inbox"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500">
+            <a href="ext_projects.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Ongoing Programs</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $ongoing_count; ?></h3>
                 </div>
-                <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-xl">
+                <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-xl group-hover:bg-blue-100 transition">
                     <i class="fas fa-spinner fa-spin-pulse"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-green-500">
+            <a href="ext_projects.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-green-500 hover:shadow-md hover:border-green-300 transition-all cursor-pointer">
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Completed Activities</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $completed_count; ?></h3>
                 </div>
-                <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-green-600 text-xl">
+                <div class="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-green-600 text-xl group-hover:bg-green-100 transition">
                     <i class="fas fa-check-circle"></i>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 border-t-4 border-t-green-500">

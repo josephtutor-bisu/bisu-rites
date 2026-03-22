@@ -17,6 +17,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if($stmt = $conn->prepare($sql)){
             $stmt->bind_param("ss", $code, $name);
             if($stmt->execute()){
+                
+                // --- SYSTEM LOG ENTRY ---
+                $log_action = "CREATE";
+                $log_details = "Created new college department: " . $name . " (" . $code . ")";
+                $ip = $_SERVER['REMOTE_ADDR'];
+                $log_sql = "INSERT INTO system_logs (user_id, action_type, action_details, ip_address) VALUES (?, ?, ?, ?)";
+                if($log_stmt = $conn->prepare($log_sql)){
+                    $log_stmt->bind_param("isss", $_SESSION['id'], $log_action, $log_details, $ip);
+                    $log_stmt->execute();
+                    $log_stmt->close();
+                }
+                // ------------------------
+
                 header("location: admin_colleges.php");
                 exit;
             } else {

@@ -21,17 +21,21 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
 }
 ?>
 
-<!-- Sidebar Navigation -->
 <aside class="sidebar">
     <div class="sidebar-header">
         <h1>BISU R.I.T.E.S</h1>
         <p><?php 
+            // UPDATED: Aligned with the system_roles table
             $role_titles = array(
                 1 => 'Admin Panel',
                 2 => 'R&D Office',
                 3 => 'ITSO Office',
                 4 => 'Extension Office',
-                5 => 'Faculty Portal'
+                5 => 'R&D Office',
+                6 => 'ITSO Office',
+                7 => 'Extension Office',
+                8 => 'Faculty Portal',
+                9 => 'Student Portal'
             );
             echo isset($role_titles[$_SESSION["role_id"]]) ? $role_titles[$_SESSION["role_id"]] : 'Dashboard';
         ?></p>
@@ -69,7 +73,8 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                     <span>Settings</span>
                 </a>
             </li>
-        <?php elseif ($_SESSION["role_id"] == 2): // R&D Director Navigation ?>
+            
+        <?php elseif (in_array($_SESSION["role_id"], [2, 5])): // R&D Director (2) & Secretary (5) Navigation ?>
             <li class="sidebar-nav-item">
                 <a href="<?php echo $base_link; ?>rd_dashboard.php" class="sidebar-nav-link <?php echo $current_file == 'rd_dashboard.php' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-line"></i>
@@ -88,7 +93,8 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                     <span>Researchers</span>
                 </a>
             </li>
-        <?php elseif ($_SESSION["role_id"] == 3): // ITSO Director Navigation ?>
+            
+        <?php elseif (in_array($_SESSION["role_id"], [3, 6])): // ITSO Director (3) & Secretary (6) Navigation ?>
             <li class="sidebar-nav-item">
                 <a href="<?php echo $base_link; ?>itso_dashboard.php" class="sidebar-nav-link <?php echo $current_file == 'itso_dashboard.php' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-line"></i>
@@ -107,7 +113,8 @@ if (strpos(dirname($_SERVER['PHP_SELF']), '/admin') !== false) {
                     <span>Commercialization</span>
                 </a>
             </li>
-        <?php elseif ($_SESSION["role_id"] == 4): // Extension Director Navigation ?>
+            
+        <?php elseif (in_array($_SESSION["role_id"], [4, 7])): // Extension Director (4) & Secretary (7) Navigation ?>
             <li class="sidebar-nav-item">
                 <a href="<?php echo $base_link; ?>extension_dashboard.php" class="sidebar-nav-link <?php echo $current_file == 'extension_dashboard.php' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-line"></i>

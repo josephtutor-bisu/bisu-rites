@@ -2,13 +2,12 @@
 session_start();
 require_once "../db_connect.php";
 
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 3){ header("location: ../login.php"); exit; }
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [3, 6])){ header("location: ../login.php"); exit; }
 
-// Fetch IP Assets and join with Inventors to get the Main Developer
+// Fetch IP Assets and link directly to the user who created the submission
 $sql = "SELECT a.*, CONCAT(u.first_name, ' ', u.last_name) AS inventor_name 
         FROM ip_assets a 
-        LEFT JOIN ip_inventors i ON a.ip_id = i.ip_id AND i.task_assignment = 'Main Developer'
-        LEFT JOIN users u ON i.user_id = u.user_id
+        LEFT JOIN users u ON a.created_by_user_id = u.user_id
         ORDER BY FIELD(a.status, 'Disclosure Submitted', 'Under Review', 'Approved for Drafting', 'Filed', 'Registered', 'Draft', 'Refused', 'Expired', 'Rejected'), a.ip_id DESC";
 
 $result = $conn->query($sql);

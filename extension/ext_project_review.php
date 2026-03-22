@@ -3,27 +3,40 @@ session_start();
 require_once "../db_connect.php";
 
 // Check if user is logged in AND is Extension Director (Role ID 4)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 4){ 
-    header("location: ../login.php"); 
-    exit; 
-}
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [4, 7])){ header("location: ../login.php"); exit; }
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $msg = "";
 $msg_type = "";
 
 // 1. Handle Status Updates
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_status'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_status']) && $_SESSION['role_id'] == 4) {
     $new_status = $_POST['new_status'];
     
-    // Valid statuses based on our database design
-    $valid_statuses = ['Under Review', 'Approved', 'Ongoing', 'Completed', 'Not Completed', 'Needs Follow-up', 'Rejected'];
+    // FIX: Added 'Proposed' to the valid statuses array so it matches the HTML dropdown
+    $valid_statuses = ['Proposed', 'Under Review', 'Approved', 'Ongoing', 'Completed', 'Not Completed', 'Needs Follow-up', 'Rejected'];
     
     if (in_array($new_status, $valid_statuses)) {
         $update_sql = "UPDATE ext_projects SET service_status = ? WHERE ext_id = ?";
         if ($stmt = $conn->prepare($update_sql)) {
             $stmt->bind_param("si", $new_status, $id);
             if ($stmt->execute()) {
+                
+                // --- SYSTEM LOG ENTRY ---
+                $log_action = "UPDATE";
+                $log_details = "Director updated Extension Project EXT-" . $id . ". Status set to: " . $new_status;
+                $ip = $_SERVER['REMOTE_ADDR'];
+                $log_sql = "INSERT INTO system_logs (user_id, action_type, action_details, ip_address) VALUES (?, ?, ?, ?)";
+                if($log_stmt = $conn->prepare($log_sql)){
+                    $log_stmt->bind_param("isss", $_SESSION['id'], $log_action, $log_details, $ip);
+                    $log_stmt->execute();
+                    $log_stmt->close();
+                }
+                // ------------------------
+                
+                // Immediately update the local project variable so the UI reflects the change
+                $project['service_status'] = $new_status;
+
                 $msg = "Project status successfully updated to '$new_status'.";
                 $msg_type = "success";
             } else {
@@ -31,6 +44,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_status'])) {
                 $msg_type = "error";
             }
         }
+    } else {
+        $msg = "Invalid status selected.";
+        $msg_type = "error";
     }
 }
 
@@ -189,22 +205,29 @@ include "../includes/header.php";
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                         <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Director Actions</h3>
                         
-                        <form method="post" class="space-y-4">
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Update Status To:</label>
-                            <select name="new_status" class="w-full border border-slate-300 rounded p-2 focus:ring-green-500">
-                                <?php
-                                $statuses = ['Proposed', 'Under Review', 'Approved', 'Ongoing', 'Completed', 'Not Completed', 'Needs Follow-up', 'Rejected'];
-                                foreach($statuses as $st) {
-                                    $selected = ($st == $project['service_status']) ? "selected" : "";
-                                    echo "<option value='{$st}' {$selected}>{$st}</option>";
-                                }
-                                ?>
-                            </select>
+                        <?php if($_SESSION['role_id'] == 7): // IF EXTENSION SECRETARY ?>
+                            <div class="bg-green-50 text-green-800 p-4 rounded-lg text-sm border border-green-200">
+                                <i class="fas fa-info-circle mr-2 text-green-600 text-lg align-middle"></i>
+                                <span>As an Extension Secretary, you have view-only access. Only the Director can approve, reject, or update the status of outreach programs.</span>
+                            </div>
+                        <?php else: // IF EXTENSION DIRECTOR ?>
+                            <form method="post" class="space-y-4">
+                                <label class="block text-sm font-bold text-slate-700 mb-1">Update Status To:</label>
+                                <select name="new_status" class="w-full border border-slate-300 rounded p-2 focus:ring-green-500">
+                                    <?php
+                                    $statuses = ['Proposed', 'Under Review', 'Approved', 'Ongoing', 'Completed', 'Not Completed', 'Needs Follow-up', 'Rejected'];
+                                    foreach($statuses as $st) {
+                                        $selected = ($st == $project['service_status']) ? "selected" : "";
+                                        echo "<option value='{$st}' {$selected}>{$st}</option>";
+                                    }
+                                    ?>
+                                </select>
 
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition">
-                                <i class="fas fa-save mr-1"></i> Save Update
-                            </button>
-                        </form>
+                                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition">
+                                    <i class="fas fa-save mr-1"></i> Save Update
+                                </button>
+                            </form>
+                        <?php endif; ?>
                     </div>
 
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">

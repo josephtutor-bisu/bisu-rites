@@ -2,11 +2,14 @@
 session_start();
 require_once "../db_connect.php";
 
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 2){ header("location: ../login.php"); exit; }
+// Check if user is logged in AND is R&D Director (2) OR R&D Secretary (5)
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [2, 5])){ header("location: ../login.php"); exit; }
 
-$sql = "SELECT p.*, c.college_code 
+$sql = "SELECT p.*, c.college_code, u.first_name, u.last_name 
         FROM rd_projects p 
         LEFT JOIN colleges c ON p.college_id = c.college_id 
+        LEFT JOIN rd_proponents rp ON p.rd_id = rp.rd_id AND rp.project_role = 'Main Author'
+        LEFT JOIN users u ON rp.user_id = u.user_id
         ORDER BY FIELD(p.status, 'Submitted', 'Under Review', 'Approved', 'Ongoing', 'Completed', 'Draft', 'Deferred', 'Rejected'), p.rd_id DESC";
 // This ORDER BY pushes things that need attention (Submitted) to the top!
 
@@ -31,6 +34,7 @@ include "../includes/header.php";
                         <tr class="bg-slate-100 border-b border-slate-200 text-slate-600 text-sm">
                             <th class="p-4 font-semibold">ID</th>
                             <th class="p-4 font-semibold">Project Title</th>
+                            <th class="p-4 font-semibold">Author</th>
                             <th class="p-4 font-semibold">College</th>
                             <th class="p-4 font-semibold">Status</th>
                             <th class="p-4 font-semibold">Actions</th>
@@ -51,7 +55,12 @@ include "../includes/header.php";
                                 
                                 echo "<tr class='border-b border-slate-100 hover:bg-slate-50 transition'>";
                                 echo "<td class='p-4 text-slate-500'>RD-" . $row["rd_id"] . "</td>";
-                                echo "<td class='p-4 font-medium text-slate-800'>" . htmlspecialchars(substr($row["project_title"], 0, 50)) . "</td>";
+                                echo "<td class='p-4 font-medium text-slate-800'>" . htmlspecialchars(substr($row["project_title"], 0, 40)) . "...</td>";
+                                
+                                // NEW AUTHOR COLUMN
+                                $author_name = ($row['first_name'] && $row['last_name']) ? htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) : '<span class="italic text-slate-400">Unknown</span>';
+                                echo "<td class='p-4 text-slate-600 font-medium'>" . $author_name . "</td>";
+                                
                                 echo "<td class='p-4'>" . ($row["college_code"] ? htmlspecialchars($row["college_code"]) : '<span class="italic text-slate-400">None</span>') . "</td>";
                                 echo "<td class='p-4'><span class='px-2 py-1 rounded-full text-xs font-semibold {$statusColor}'>" . $row["status"] . "</span></td>";
                                 

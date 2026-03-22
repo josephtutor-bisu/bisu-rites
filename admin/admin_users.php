@@ -13,10 +13,11 @@ $role_filter = isset($_GET['role']) ? $_GET['role'] : '';
 $allowed_filters = ['directors', 'faculty', 'student', ''];
 if (!in_array($role_filter, $allowed_filters)) $role_filter = '';
 
-// 3. Fetch users with optional role filter
-$sql = "SELECT u.user_id, u.username, u.first_name, u.last_name, u.role_id, r.role_name 
+// 3. Fetch users with optional role filter (Joined with colleges)
+$sql = "SELECT u.user_id, u.username, u.first_name, u.last_name, u.role_id, r.role_name, c.college_code 
         FROM users u 
-        LEFT JOIN system_roles r ON u.role_id = r.role_id";
+        LEFT JOIN system_roles r ON u.role_id = r.role_id
+        LEFT JOIN colleges c ON u.college_id = c.college_id";
 if ($role_filter === 'directors') {
     $sql .= " WHERE u.role_id IN (2, 3, 4)";
 } elseif ($role_filter === 'faculty') {
@@ -151,9 +152,10 @@ include "../includes/header.php";
                         <thead>
                             <tr>
                                 <th style="width: 8%;"><i class="fas fa-hashtag"></i> ID</th>
-                                <th style="width: 30%;"><i class="fas fa-user"></i> Full Name</th>
-                                <th style="width: 25%;"><i class="fas fa-at"></i> Username</th>
-                                <th style="width: 20%;"><i class="fas fa-shield-alt"></i> Role</th>
+                                <th style="width: 25%;"><i class="fas fa-user"></i> Full Name</th>
+                                <th style="width: 20%;"><i class="fas fa-at"></i> Username</th>
+                                <th style="width: 15%;"><i class="fas fa-building"></i> College</th>
+                                <th style="width: 15%;"><i class="fas fa-shield-alt"></i> Role</th>
                                 <th style="width: 17%;"><i class="fas fa-cogs"></i> Actions</th>
                             </tr>
                         </thead>
@@ -180,6 +182,16 @@ include "../includes/header.php";
                                     echo "<td><span class='badge badge-outline'>#" . $userId . "</span></td>";
                                     echo "<td class='font-semibold'>" . $fullName . "</td>";
                                     echo "<td class='text-muted'>@" . $username . "</td>";
+                                    
+                                    // NEW COLLEGE COLUMN
+                                    echo "<td>";
+                                    if ($row['college_code']) {
+                                        echo "<span class='badge' style='background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;'>" . htmlspecialchars($row['college_code']) . "</span>";
+                                    } else {
+                                        echo "<span class='text-xs text-muted italic'>N/A</span>";
+                                    }
+                                    echo "</td>";
+
                                     echo "<td><span class='badge " . $roleBadgeClass . "'>" . $roleName . "</span></td>";
                                     echo "<td class='flex gap-4'>";
                                     

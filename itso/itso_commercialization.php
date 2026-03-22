@@ -3,10 +3,7 @@ session_start();
 require_once "../db_connect.php";
 
 // ITSO Director only (Role ID 3)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 3){ 
-    header("location: ../login.php"); 
-    exit; 
-}
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [3, 6])){ header("location: ../login.php"); exit; }
 
 // --- STATS ---
 $pending_count = 0;

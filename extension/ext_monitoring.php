@@ -2,10 +2,7 @@
 session_start();
 require_once "../db_connect.php";
 
-if (!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 4) {
-    header("location: ../login.php");
-    exit;
-}
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [4, 7])){ header("location: ../login.php"); exit; }
 
 // --- Summary Statistics ---
 $total_projects = 0;

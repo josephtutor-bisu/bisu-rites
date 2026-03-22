@@ -54,19 +54,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     header("location: admin/admin_dashboard.php");
                                     break;
                                 case 2: // R&D Director
+                                case 5: // R&D Secretary
                                     header("location: RandD/rd_dashboard.php");
                                     break;
                                 case 3: // ITSO Director
+                                case 6: // ITSO Secretary
                                     header("location: itso/itso_dashboard.php");
                                     break;
-                                // ... (other cases remain the same)
                                 case 4: // Extension Director
-                                header("location: extension/extension_dashboard.php"); // Update this if you put it in an extension folder
+                                case 7: // Extension Secretary
+                                    header("location: extension/extension_dashboard.php");
                                     break;
-                                default: // Faculty/Student
-                                header("location: users/user_dashboard.php"); 
+                                case 8: // Faculty
+                                case 9: // Student
+                                    header("location: users/user_dashboard.php"); 
                                     break;
-                    }
+                                default:
+                                    header("location: login.php"); // Fallback
+                                    break;
+                            }
                         } else {
                             $login_err = "Invalid username or password.";
                         }

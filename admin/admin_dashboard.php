@@ -45,8 +45,14 @@ if($stu_query) {
     $student_count = $stu_query->fetch_assoc()['count'];
 }
 
-// 6. Get Recent Users
-$recent_users = $conn->query("SELECT user_id, username, first_name, last_name, role_id FROM users ORDER BY user_id DESC LIMIT 5");
+// 6. Get Recent Users (Joined with colleges to get the college code)
+$recent_users = $conn->query("
+    SELECT u.user_id, u.username, u.first_name, u.last_name, u.role_id, c.college_code 
+    FROM users u 
+    LEFT JOIN colleges c ON u.college_id = c.college_id 
+    ORDER BY u.user_id DESC 
+    LIMIT 5
+");
 
 // 7. Get System Health (Total Projects, IPs, Extensions)
 $rd_count = $conn->query("SELECT COUNT(*) as count FROM rd_projects")->fetch_assoc()['count'];
@@ -79,7 +85,7 @@ include "../includes/header.php";
         <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 text-white p-8 shadow-lg">
             <div class="max-w-7xl mx-auto flex justify-between items-start">
                 <div>
-                    <h1 class="text-4xl font-bold mb-2">System Controller Dashboard</h1>
+                    <h1 class="text-4xl font-bold mb-2">Super Admin Dashboard</h1>
                     <p class="text-blue-100 text-lg">Manage departments, users, and system operations</p>
                     <div class="mt-4 flex items-center text-sm">
                         <div class="w-3 h-3 bg-green-400 rounded-full mr-2 animate-pulse"></div>
@@ -265,24 +271,49 @@ include "../includes/header.php";
                                 <tr class="text-left border-b border-slate-200">
                                     <th class="py-2 px-3 font-semibold text-slate-600">Username</th>
                                     <th class="py-2 px-3 font-semibold text-slate-600">Name</th>
+                                    <th class="py-2 px-3 font-semibold text-slate-600">College</th>
                                     <th class="py-2 px-3 font-semibold text-slate-600">Role</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php 
-                                $role_map = [1 => 'Superadmin', 2 => 'R&D Director', 3 => 'ITSO Director', 4 => 'Extension Director', 5 => 'Faculty', 6 => 'Student'];
+                                // UPDATED: Map all 9 roles perfectly
+                                $role_map = [
+                                    1 => 'Superadmin', 
+                                    2 => 'R&D Director', 
+                                    3 => 'ITSO Director', 
+                                    4 => 'Extension Director', 
+                                    5 => 'R&D Secretary', 
+                                    6 => 'ITSO Secretary', 
+                                    7 => 'Extension Secretary', 
+                                    8 => 'Faculty', 
+                                    9 => 'Student'
+                                ];
+                                
                                 while($user = $recent_users->fetch_assoc()): 
                                 ?>
                                     <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
                                         <td class="py-3 px-3"><strong class="text-slate-700"><?php echo htmlspecialchars($user['username']); ?></strong></td>
                                         <td class="py-3 px-3 text-slate-600"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></td>
+                                        
+                                        <td class="py-3 px-3">
+                                            <?php if($user['college_code']): ?>
+                                                <span class="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs font-bold border border-slate-200">
+                                                    <?php echo htmlspecialchars($user['college_code']); ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="text-slate-400 italic text-xs">N/A</span>
+                                            <?php endif; ?>
+                                        </td>
+
                                         <td class="py-3 px-3">
                                             <span class="px-3 py-1 text-xs font-semibold rounded-full <?php 
                                                 $role_id = $user['role_id'];
-                                                if($role_id == 1) echo 'bg-red-100 text-red-700';
-                                                elseif($role_id <= 4) echo 'bg-purple-100 text-purple-700';
-                                                elseif($role_id == 5) echo 'bg-amber-100 text-amber-700';
-                                                else echo 'bg-cyan-100 text-cyan-700';
+                                                if($role_id == 1) echo 'bg-red-100 text-red-700'; // Superadmin
+                                                elseif(in_array($role_id, [2, 3, 4])) echo 'bg-blue-100 text-blue-700'; // Directors
+                                                elseif(in_array($role_id, [5, 6, 7])) echo 'bg-purple-100 text-purple-700'; // Secretaries
+                                                elseif($role_id == 8) echo 'bg-amber-100 text-amber-700'; // Faculty
+                                                else echo 'bg-emerald-100 text-emerald-700'; // Students
                                             ?>">
                                                 <?php echo $role_map[$role_id] ?? 'Unknown'; ?>
                                             </span>

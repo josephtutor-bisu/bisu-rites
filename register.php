@@ -11,27 +11,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $first_name = trim($_POST["first_name"] ?? "");
     $last_name = trim($_POST["last_name"] ?? "");
 
-    // Validate Username
-    if (empty(trim($_POST["username"]))) {
-        $username_err = "Please enter a username.";
+    // 1. Validate Username (Must end with @bisu.edu.ph)
+    $input_username = trim($_POST["username"]);
+    if (empty($input_username)) {
+        $username_err = "Please enter your BISU email address.";
+    } elseif (!preg_match('/@bisu\.edu\.ph$/i', $input_username)) {
+        $username_err = "You must use a valid @bisu.edu.ph institutional email.";
     } else {
         $sql = "SELECT user_id FROM users WHERE username = ?";
         if ($stmt = $conn->prepare($sql)) {
             $stmt->bind_param("s", $param_username);
-            $param_username = trim($_POST["username"]);
+            $param_username = $input_username;
             if ($stmt->execute()) {
                 $stmt->store_result();
-                if ($stmt->num_rows == 1) {
-                    $username_err = "This username is already taken.";
+                if ($stmt->num_rows >= 1) {
+                    $username_err = "This BISU email is already registered.";
                 } else {
-                    $username = trim($_POST["username"]);
+                    $username = $input_username;
                 }
             }
             $stmt->close();
         }
     }
 
-    // Validate Password
+    // 2. Validate Password (Minimum 6 characters)
     if (empty(trim($_POST["password"]))) {
         $password_err = "Please enter a password.";
     } elseif (strlen(trim($_POST["password"])) < 6) {
@@ -40,14 +43,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $password = trim($_POST["password"]);
     }
 
-    // Validate Role
-    if (empty($_POST["role_id"]) || !in_array($_POST["role_id"], ['5', '6'])) {
+    // 3. Validate Role (8 = Faculty, 9 = Student based on system_roles)
+    if (empty($_POST["role_id"]) || !in_array($_POST["role_id"], ['8', '9'])) {
         $role_err = "Please select a valid role.";
     } else {
         $role_id = $_POST["role_id"];
     }
 
-    // Check input errors before inserting
+    // Check input errors before inserting into database
     if (empty($username_err) && empty($password_err) && empty($role_err)) {
         $sql = "INSERT INTO users (username, password_hash, first_name, last_name, role_id) VALUES (?, ?, ?, ?, ?)";
         if ($stmt = $conn->prepare($sql)) {
@@ -100,10 +103,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .register-container { 
             animation: slideIn 0.6s ease-out;
-            width: 500px;
-            height: 500px;
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            max-height: 95vh;
+            overflow-y: auto;
             margin: 0 20px;
-            overflow: hidden;
+        }
+
+        /* Scrollbar styling */
+        .register-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .register-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .register-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .register-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
         }
 
         @keyframes slideIn {
@@ -114,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .input-field {
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
             border: 2px solid #e5e7eb;
-            font-size: 16px;
+            font-size: 14px;
         }
         .input-field:focus {
             border-color: #667eea;
@@ -146,7 +171,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="register-container">
         <div class="bg-white rounded-2xl shadow-2xl overflow-hidden mx-4">
 
-            <!-- Header -->
             <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-5 py-4">
                 <div class="flex flex-col items-center">
                     <div class="logo-icon mb-2">
@@ -155,12 +179,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <h1 class="text-xl font-bold text-white text-center">Create Account</h1>
-                    <p class="text-slate-300 text-xs mt-0.5 text-center">Faculty or Student</p>
+                    <p class="text-slate-300 text-xs mt-0.5 text-center">Faculty or Student Portal</p>
                 </div>
             </div>
 
-            <!-- Body -->
-            <div class="px-5 py-4" style="max-height: 410px; overflow-y: auto;">
+            <div class="px-5 py-4">
                 <?php if ($success): ?>
                     <div class="text-center py-4">
                         <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -169,7 +192,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <h2 class="text-base font-bold text-slate-800 mb-1">Account Created!</h2>
                         <p class="text-slate-500 text-xs mb-3">Successfully registered.</p>
                         <a href="login.php" class="btn-register inline-block text-white font-semibold py-2 px-5 rounded-lg text-xs">
-                            <i class="fas fa-sign-in-alt mr-1"></i>Login
+                            <i class="fas fa-sign-in-alt mr-1"></i> Go to Login
                         </a>
                     </div>
                 <?php else: ?>
@@ -177,19 +200,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php if (!empty($register_err)): ?>
                     <div class="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg flex items-start text-xs">
                         <i class="fas fa-exclamation-circle text-red-500 mr-1.5 flex-shrink-0 mt-0.5"></i>
-                        <span class="text-red-700"><?php echo htmlspecialchars($register_err); ?></span>
                     </div>
                 <?php endif; ?>
 
-                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="space-y-2">
-                    <!-- Name Row -->
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="space-y-3">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs font-medium text-slate-700 mb-0.5">
                                 <i class="fas fa-user mr-1 text-slate-400"></i>First Name
                             </label>
                             <input type="text" name="first_name" value="<?php echo htmlspecialchars($first_name); ?>"
-                                class="input-field w-full px-3 py-2 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+                                class="input-field w-full px-3 py-2 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none"
                                 placeholder="Juan" required>
                         </div>
                         <div>
@@ -197,69 +218,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <i class="fas fa-user mr-1 text-slate-400"></i>Last Name
                             </label>
                             <input type="text" name="last_name" value="<?php echo htmlspecialchars($last_name); ?>"
-                                class="input-field w-full px-3 py-2 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+                                class="input-field w-full px-3 py-2 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none"
                                 placeholder="Dela Cruz" required>
                         </div>
                     </div>
 
-                    <!-- Username -->
                     <div>
                         <label class="block text-xs font-medium text-slate-700 mb-0.5">
-                            <i class="fas fa-at mr-1 text-slate-400"></i>Username
+                            <i class="fas fa-envelope mr-1 text-slate-400"></i>BISU Email (Username)
                         </label>
-                        <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>"
-                            class="input-field w-full px-3 py-2 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none <?php echo !empty($username_err) ? 'error' : ''; ?>"
-                            placeholder="Username" required>
+                        <input type="email" name="username" value="<?php echo htmlspecialchars($username); ?>"
+                            class="input-field w-full px-3 py-2 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none <?php echo !empty($username_err) ? 'error' : ''; ?>"
+                            placeholder="juan.delacruz@bisu.edu.ph" required>
                         <?php if (!empty($username_err)): ?>
-                            <p class="mt-0.5 text-red-500 text-xs"><i class="fas fa-times-circle mr-0.5"></i><?php echo htmlspecialchars($username_err); ?></p>
+                            <p class="mt-0.5 text-red-500 text-xs font-medium"><i class="fas fa-times-circle mr-0.5"></i><?php echo htmlspecialchars($username_err); ?></p>
                         <?php endif; ?>
                     </div>
 
-                    <!-- Password -->
                     <div>
                         <label class="block text-xs font-medium text-slate-700 mb-0.5">
                             <i class="fas fa-lock mr-1 text-slate-400"></i>Password
                         </label>
                         <div class="relative">
                             <input type="password" name="password" id="password"
-                                class="input-field w-full px-3 py-2 pr-9 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none <?php echo !empty($password_err) ? 'error' : ''; ?>"
-                                placeholder="Min. 6 chars" required>
+                                class="input-field w-full px-3 py-2 pr-9 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none <?php echo !empty($password_err) ? 'error' : ''; ?>"
+                                placeholder="Minimum 6 characters" required>
                             <button type="button" id="togglePassword" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none text-xs" tabindex="-1">
                                 <i class="fas fa-eye" id="eyeIcon"></i>
                             </button>
                         </div>
                         <?php if (!empty($password_err)): ?>
-                            <p class="mt-0.5 text-red-500 text-xs"><i class="fas fa-times-circle mr-0.5"></i><?php echo htmlspecialchars($password_err); ?></p>
+                            <p class="mt-0.5 text-red-500 text-xs font-medium"><i class="fas fa-times-circle mr-0.5"></i><?php echo htmlspecialchars($password_err); ?></p>
                         <?php endif; ?>
                     </div>
 
-                    <!-- Role -->
                     <div>
                         <label class="block text-xs font-medium text-slate-700 mb-0.5">
-                            <i class="fas fa-id-badge mr-1 text-slate-400"></i>Role
+                            <i class="fas fa-id-badge mr-1 text-slate-400"></i>Account Type
                         </label>
                         <select name="role_id" required
-                            class="input-field w-full px-3 py-2 rounded-lg text-sm text-slate-900 focus:outline-none <?php echo !empty($role_err) ? 'error' : ''; ?>">
-                            <option value="">-- Select role --</option>
-                            <option value="5" <?php echo $role_id == '5' ? 'selected' : ''; ?>>Faculty</option>
-                            <option value="6" <?php echo $role_id == '6' ? 'selected' : ''; ?>>Student</option>
+                            class="input-field w-full px-3 py-2 rounded-lg text-slate-900 focus:outline-none <?php echo !empty($role_err) ? 'error' : ''; ?>">
+                            <option value="">-- Select --</option>
+                            <option value="8" <?php echo $role_id == '8' ? 'selected' : ''; ?>>Faculty</option>
+                            <option value="9" <?php echo $role_id == '9' ? 'selected' : ''; ?>>Student</option>
                         </select>
                         <?php if (!empty($role_err)): ?>
-                            <p class="mt-0.5 text-red-500 text-xs"><i class="fas fa-times-circle mr-0.5"></i><?php echo htmlspecialchars($role_err); ?></p>
+                            <p class="mt-0.5 text-red-500 text-xs font-medium"><i class="fas fa-times-circle mr-0.5"></i><?php echo htmlspecialchars($role_err); ?></p>
                         <?php endif; ?>
                     </div>
 
-                    <!-- Submit -->
                     <button type="submit"
-                        class="btn-register w-full text-white font-semibold py-2 rounded-lg mt-2 flex items-center justify-center text-xs">
-                        <i class="fas fa-user-plus mr-1.5"></i>Register
+                        class="btn-register w-full text-white font-bold py-2.5 rounded-lg mt-4 flex items-center justify-center text-sm shadow">
+                        <i class="fas fa-user-plus mr-2"></i> Create Account
                     </button>
                 </form>
 
-                <div class="mt-3 pt-2.5 border-t border-slate-200">
+                <div class="mt-4 pt-3 border-t border-slate-200">
                     <p class="text-center text-slate-600 text-xs">
-                        Have account?
-                        <a href="login.php" class="text-purple-600 hover:text-purple-700 font-medium">Sign in</a>
+                        Already have an account?
+                        <a href="login.php" class="text-purple-600 hover:text-purple-700 font-bold transition">Sign in</a>
                     </p>
                 </div>
 

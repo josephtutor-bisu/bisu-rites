@@ -9,7 +9,7 @@ if(!isset($_SESSION["loggedin"]) || in_array($_SESSION["role_id"], [1, 2, 3, 4])
 $error = "";
 
 // Fetch users for dynamic team dropdown
-$users_sql = "SELECT user_id, first_name, last_name, role_id FROM users WHERE role_id IN (5, 6) AND user_id != ? ORDER BY last_name ASC";
+$users_sql = "SELECT user_id, first_name, last_name, role_id FROM users WHERE role_id IN (8, 9) AND user_id != ? ORDER BY last_name ASC";
 $ustmt = $conn->prepare($users_sql);
 $ustmt->bind_param("i", $_SESSION['id']);
 $ustmt->execute();

@@ -2,7 +2,8 @@
 session_start();
 require_once "../db_connect.php";
 
-if(!isset($_SESSION["loggedin"]) || in_array($_SESSION["role_id"], [1, 2, 3, 4])) {
+// STRICT AUTH: Only Faculty (8) and Students (9) belong in this portal
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [8, 9])) {
     header("location: ../login.php"); exit;
 }
 
@@ -27,6 +28,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $conn->prepare("UPDATE users SET first_name=?, last_name=?, email=?, college_id=? WHERE user_id=?");
             $stmt->bind_param("sssii", $first_name, $last_name, $email, $college_id, $user_id);
             if ($stmt->execute()) {
+                
+                // --- SYSTEM LOG ENTRY ---
+                $ip = $_SERVER['REMOTE_ADDR'];
+                $log_sql = "INSERT INTO system_logs (user_id, action_type, action_details, ip_address) VALUES (?, 'UPDATE', 'User updated their profile information', ?)";
+                if($log_stmt = $conn->prepare($log_sql)){
+                    $log_stmt->bind_param("is", $user_id, $ip);
+                    $log_stmt->execute();
+                    $log_stmt->close();
+                }
+                // ------------------------
+
                 $msg = "Profile information updated successfully!";
                 $msg_type = "success";
             } else {
@@ -43,26 +55,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $new_password = $_POST['new_password'];
         $confirm_password = $_POST['confirm_password'];
 
-        // Fetch current hashed password from database to verify
-        $stmt = $conn->prepare("SELECT password FROM users WHERE user_id=?");
+        $stmt = $conn->prepare("SELECT password_hash FROM users WHERE user_id=?"); // FIXED: Column is password_hash based on register.php
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
         $user_row = $result->fetch_assoc();
-        $hashed_password = $user_row['password'];
+        $hashed_password = $user_row['password_hash'];
         $stmt->close();
 
-        // Verify old password
         if (password_verify($current_password, $hashed_password)) {
-            // Check if new passwords match
             if ($new_password === $confirm_password) {
-                // Ensure password isn't empty and meets basic length requirement
                 if (strlen($new_password) >= 6) {
                     $new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-                    $update_stmt = $conn->prepare("UPDATE users SET password=? WHERE user_id=?");
+                    $update_stmt = $conn->prepare("UPDATE users SET password_hash=? WHERE user_id=?"); // FIXED: Column is password_hash
                     $update_stmt->bind_param("si", $new_hashed_password, $user_id);
                     
                     if ($update_stmt->execute()) {
+                        
+                        // --- SYSTEM LOG ENTRY ---
+                        $ip = $_SERVER['REMOTE_ADDR'];
+                        $log_sql = "INSERT INTO system_logs (user_id, action_type, action_details, ip_address) VALUES (?, 'UPDATE', 'User securely changed their password', ?)";
+                        if($log_stmt = $conn->prepare($log_sql)){
+                            $log_stmt->bind_param("is", $user_id, $ip);
+                            $log_stmt->execute();
+                            $log_stmt->close();
+                        }
+                        // ------------------------
+
                         $msg = "Password changed successfully!";
                         $msg_type = "success";
                     } else {
@@ -112,9 +131,14 @@ $colleges_result = $conn->query("SELECT * FROM colleges WHERE college_code != 'A
                     BISU R.I.T.E.S <span class="text-blue-300 text-sm font-normal">| Researcher Portal</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="user_dashboard.php" class="text-blue-200 hover:text-white text-sm font-medium"><i class="fas fa-home mr-1"></i> Dashboard</a>
+                    <a href="user_dashboard.php" class="text-blue-200 hover:text-white text-sm font-medium transition"><i class="fas fa-home mr-1"></i> Dashboard</a>
+                    
+                    <a href="user_downloads.php" class="text-blue-200 hover:text-white transition font-medium text-sm flex items-center bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded-md">
+                        <i class="fas fa-file-download mr-1.5"></i> Get Forms
+                    </a>
+                    
                     <span class="text-slate-400">|</span>
-                    <a href="../logout.php" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition">Logout</a>
+                    <a href="../logout.php" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition shadow-sm font-medium">Logout</a>
                 </div>
             </div>
         </div>

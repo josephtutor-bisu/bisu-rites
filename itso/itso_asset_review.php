@@ -3,17 +3,14 @@ session_start();
 require_once "../db_connect.php";
 
 // Check if user is logged in AND is ITSO Director (Role ID 3)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 3){ 
-    header("location: ../login.php"); 
-    exit; 
-}
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [3, 6])){ header("location: ../login.php"); exit; }
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $msg = "";
 $msg_type = "";
 
 // 1. Handle Status Updates
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_status'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_status']) && $_SESSION['role_id'] == 3) {
     $new_status = $_POST['new_status'];
     $app_number = isset($_POST['application_number']) ? trim($_POST['application_number']) : NULL;
     $filing_date = !empty($_POST['filing_date']) ? $_POST['filing_date'] : NULL;
@@ -27,7 +24,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_status'])) {
         if ($stmt = $conn->prepare($update_sql)) {
             $stmt->bind_param("ssssi", $new_status, $app_number, $filing_date, $registration_date, $id);
             if ($stmt->execute()) {
-                $msg = "IP status successfully updated to '$new_status'.";
+                
+                // --- SYSTEM LOG ENTRY ---
+                $log_action = "UPDATE";
+                $log_details = "Director updated IP Asset IP-" . $id . ". Status set to: " . $new_status;
+                if($app_number) $log_details .= " | App No: " . $app_number;
+                if($filing_date) $log_details .= " | Filed: " . $filing_date;
+                $ip = $_SERVER['REMOTE_ADDR'];
+                $log_sql = "INSERT INTO system_logs (user_id, action_type, action_details, ip_address) VALUES (?, ?, ?, ?)";
+                if($log_stmt = $conn->prepare($log_sql)){
+                    $log_stmt->bind_param("isss", $_SESSION['id'], $log_action, $log_details, $ip);
+                    $log_stmt->execute();
+                    $log_stmt->close();
+                }
+                // ------------------------
+
+                // Refresh the asset data so the UI updates immediately
+                $asset['status'] = $new_status;
+                $asset['application_number'] = $app_number;
+                $asset['filing_date'] = $filing_date;
+                $asset['registration_date'] = $registration_date;
+
+                $msg = "IP status and dates successfully updated to '$new_status'.";
                 $msg_type = "success";
             } else {
                 $msg = "Error updating status.";
@@ -163,40 +181,47 @@ include "../includes/header.php";
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                         <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">ITSO Processing</h3>
                         
-                        <form method="post" class="space-y-4">
-                            
-                            <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">IPOPHL App Number</label>
-                                    <input type="text" name="application_number" value="<?php echo htmlspecialchars($asset['application_number'] ?? ''); ?>" class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-teal-500" placeholder="e.g. 2-2023-000123">
-                                </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-600 mb-1">Filing Date</label>
-                                        <input type="date" name="filing_date" value="<?php echo $asset['filing_date']; ?>" class="w-full border border-slate-300 rounded p-1 text-sm">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-600 mb-1">Reg. Date</label>
-                                        <input type="date" name="registration_date" value="<?php echo $asset['registration_date']; ?>" class="w-full border border-slate-300 rounded p-1 text-sm">
-                                    </div>
-                                </div>
+                        <?php if($_SESSION['role_id'] == 6): // IF ITSO SECRETARY ?>
+                            <div class="bg-teal-50 text-teal-800 p-4 rounded-lg text-sm border border-teal-200">
+                                <i class="fas fa-info-circle mr-2 text-teal-600 text-lg align-middle"></i>
+                                <span>As an ITSO Secretary, you have view-only access to this IP disclosure. Only the Director can update IPOPHL application details and statuses.</span>
                             </div>
+                        <?php else: // IF ITSO DIRECTOR ?>
+                            <form method="post" class="space-y-4">
+                                
+                                <div class="bg-slate-50 p-3 rounded border border-slate-200 space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-600 mb-1">IPOPHL App Number</label>
+                                        <input type="text" name="application_number" value="<?php echo htmlspecialchars($asset['application_number'] ?? ''); ?>" class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-teal-500" placeholder="e.g. 2-2023-000123">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1">Filing Date</label>
+                                            <input type="date" name="filing_date" value="<?php echo $asset['filing_date']; ?>" class="w-full border border-slate-300 rounded p-1 text-sm">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1">Reg. Date</label>
+                                            <input type="date" name="registration_date" value="<?php echo $asset['registration_date']; ?>" class="w-full border border-slate-300 rounded p-1 text-sm">
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <label class="block text-sm font-bold text-slate-700 mb-1 mt-4">Update Status To:</label>
-                            <select name="new_status" class="w-full border border-slate-300 rounded p-2 mb-4 focus:ring-teal-500">
-                                <?php
-                                $statuses = ['Under Review', 'Approved for Drafting', 'Filed', 'Registered', 'Refused', 'Rejected'];
-                                foreach($statuses as $st) {
-                                    $selected = ($st == $asset['status']) ? "selected" : "";
-                                    echo "<option value='{$st}' {$selected}>{$st}</option>";
-                                }
-                                ?>
-                            </select>
+                                <label class="block text-sm font-bold text-slate-700 mb-1 mt-4">Update Status To:</label>
+                                <select name="new_status" class="w-full border border-slate-300 rounded p-2 mb-4 focus:ring-teal-500">
+                                    <?php
+                                    $statuses = ['Under Review', 'Approved for Drafting', 'Filed', 'Registered', 'Refused', 'Rejected'];
+                                    foreach($statuses as $st) {
+                                        $selected = ($st == $asset['status']) ? "selected" : "";
+                                        echo "<option value='{$st}' {$selected}>{$st}</option>";
+                                    }
+                                    ?>
+                                </select>
 
-                            <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded transition">
-                                Update IP Record
-                            </button>
-                        </form>
+                                <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded transition">
+                                    Update IP Record
+                                </button>
+                            </form>
+                        <?php endif; ?>
                     </div>
 
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">

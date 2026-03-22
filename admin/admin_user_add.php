@@ -18,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Basic Validation
     if(empty($username) || empty($password) || empty($role_id)){
         $error = "All fields are required.";
+    } elseif (!preg_match('/@bisu\.edu\.ph$/i', $username)) {
+        $error = "Username must be a valid @bisu.edu.ph institutional email.";
     } else {
         // Insert
         $sql = "INSERT INTO users (username, password_hash, first_name, last_name, role_id) VALUES (?, ?, ?, ?, ?)";
@@ -25,9 +27,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $stmt->bind_param("ssssi", $username, $hashed_password, $first_name, $last_name, $role_id);
             
-            if ($stmt->execute()) {
-                header("location: admin_users.php"); // Success! Back to list
-                exit();
+            if($stmt->execute()){
+                
+                // --- SYSTEM LOG ENTRY ---
+                $log_action = "CREATE";
+                $log_details = "Created new user account: " . $username . " (Role ID: " . $role_id . ")";
+                $ip = $_SERVER['REMOTE_ADDR'];
+                $log_sql = "INSERT INTO system_logs (user_id, action_type, action_details, ip_address) VALUES (?, ?, ?, ?)";
+                if($log_stmt = $conn->prepare($log_sql)){
+                    $log_stmt->bind_param("isss", $_SESSION['id'], $log_action, $log_details, $ip);
+                    $log_stmt->execute();
+                    $log_stmt->close();
+                }
+                // ------------------------
+
+                header("location: admin_users.php");
+                exit;
             } else {
                 $error = "Error: Username might already exist.";
             }
@@ -133,15 +148,15 @@ include "../includes/header.php";
                                     <i class="fas fa-at mr-2 text-primary"></i>Username
                                 </label>
                                 <input 
-                                    type="text" 
+                                    type="email" 
                                     id="username"
                                     name="username" 
                                     class="input" 
-                                    placeholder="johndoe"
+                                    placeholder="juan.delacruz@bisu.edu.ph"
                                     value="<?php echo htmlspecialchars($username); ?>"
                                     required
                                 >
-                                <p class="text-xs text-muted mt-1">Use lowercase letters and numbers only. No spaces.</p>
+                                <p class="text-xs text-muted mt-1">Must be an official @bisu.edu.ph email address.</p>
                             </div>
                             
                             <div class="form-group">
@@ -170,12 +185,27 @@ include "../includes/header.php";
                                 </label>
                                 <select name="role_id" id="role_id" class="input" required>
                                     <option value="">-- Select a role --</option>
-                                    <option value="2" <?php echo $role_id == 2 ? 'selected' : ''; ?>>R&D Director</option>
-                                    <option value="3" <?php echo $role_id == 3 ? 'selected' : ''; ?>>ITSO Director</option>
-                                    <option value="4" <?php echo $role_id == 4 ? 'selected' : ''; ?>>Extension Director</option>
-                                    <option value="5" <?php echo $role_id == 5 ? 'selected' : ''; ?>>Faculty</option>
-                                    <option value="6" <?php echo $role_id == 6 ? 'selected' : ''; ?>>Student</option>
-                                    <option value="1" <?php echo $role_id == 1 ? 'selected' : ''; ?>>Superadmin</option>
+                                    <option value="1">System Superadmin</option>
+                                    
+                                    <optgroup label="Research & Development">
+                                        <option value="2">R&D Director</option>
+                                        <option value="5">R&D Secretary</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Innovation (ITSO)">
+                                        <option value="3">ITSO Director</option>
+                                        <option value="6">ITSO Secretary</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Extension Services">
+                                        <option value="4">Extension Director</option>
+                                        <option value="7">Extension Secretary</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="University Members">
+                                        <option value="8">Faculty</option>
+                                        <option value="9">Student</option>
+                                    </optgroup>
                                 </select>
                                 <p class="text-xs text-muted mt-1">Superadmin has full system access. Assign carefully.</p>
                             </div>

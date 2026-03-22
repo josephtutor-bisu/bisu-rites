@@ -27,6 +27,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     // THIS WAS MISSING! We must execute the statement before redirecting.
     if($stmt->execute()){
+
+        // --- SYSTEM LOG ENTRY ---
+        $log_action = "UPDATE";
+        $log_details = "Updated user profile for ID: " . $id . " (Assigned to Role ID: " . $role_id . ")";
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $log_sql = "INSERT INTO system_logs (user_id, action_type, action_details, ip_address) VALUES (?, ?, ?, ?)";
+        if($log_stmt = $conn->prepare($log_sql)){
+            $log_stmt->bind_param("isss", $_SESSION['id'], $log_action, $log_details, $ip);
+            $log_stmt->execute();
+            $log_stmt->close();
+        }
+        // ------------------------
+
         header("location: admin_users.php");
         exit;
     } else {
@@ -195,11 +208,28 @@ include "../includes/header.php";
                                     <i class="fas fa-shield-alt mr-2 text-primary"></i>User Role
                                 </label>
                                 <select name="role_id" id="role_id" class="input" required>
-                                    <option value="2" <?php if($user['role_id']==2) echo 'selected'; ?>>R&D Director</option>
-                                    <option value="3" <?php if($user['role_id']==3) echo 'selected'; ?>>ITSO Director</option>
-                                    <option value="4" <?php if($user['role_id']==4) echo 'selected'; ?>>Extension Director</option>
-                                    <option value="5" <?php if($user['role_id']==5) echo 'selected'; ?>>Faculty</option>
-                                    <option value="6" <?php if($user['role_id']==6) echo 'selected'; ?>>Student</option>
+                                    <option value="1" <?php echo $user['role_id'] == 1 ? 'selected' : ''; ?>>System Superadmin</option>
+                                    
+                                    <optgroup label="Research & Development">
+                                        <option value="2" <?php echo $user['role_id'] == 2 ? 'selected' : ''; ?>>R&D Director</option>
+                                        <option value="5" <?php echo $user['role_id'] == 5 ? 'selected' : ''; ?>>R&D Secretary</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Innovation (ITSO)">
+                                        <option value="3" <?php echo $user['role_id'] == 3 ? 'selected' : ''; ?>>ITSO Director</option>
+                                        <option value="6" <?php echo $user['role_id'] == 6 ? 'selected' : ''; ?>>ITSO Secretary</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="Extension Services">
+                                        <option value="4" <?php echo $user['role_id'] == 4 ? 'selected' : ''; ?>>Extension Director</option>
+                                        <option value="7" <?php echo $user['role_id'] == 7 ? 'selected' : ''; ?>>Extension Secretary</option>
+                                    </optgroup>
+                                    
+                                    <optgroup label="University Members">
+                                        <option value="8" <?php echo $user['role_id'] == 8 ? 'selected' : ''; ?>>Faculty</option>
+                                        <option value="9" <?php echo $user['role_id'] == 9 ? 'selected' : ''; ?>>Student</option>
+                                    </optgroup>
+                                </select>
                                 </select>
                             </div>
                         </div>

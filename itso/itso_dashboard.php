@@ -3,10 +3,7 @@ session_start();
 require_once "../db_connect.php";
 
 // Check if user is logged in AND is ITSO Director (Role ID 3)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 3){ 
-    header("location: ../login.php"); 
-    exit; 
-}
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [3, 6])){ header("location: ../login.php"); exit; }
 
 // --- ITSO STATISTICS ---
 
@@ -73,7 +70,7 @@ include "../includes/header.php";
                     <i class="fas fa-lightbulb"></i>
                 </div>
                 <div class="text-sm">
-                    <p class="text-slate-500 text-xs">Director Account</p>
+                    <p class="text-slate-500 text-xs"><?php echo $_SESSION['role_id'] == 3 ? 'Director Account' : 'Secretary Account'; ?></p>
                     <p class="font-bold text-slate-800"><?php echo htmlspecialchars($_SESSION["username"]); ?></p>
                 </div>
                 <button class="btn btn-outline btn-sm" onclick="window.location.href='../logout.php'" style="margin-left: auto;">
@@ -85,45 +82,45 @@ include "../includes/header.php";
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500">
+            <a href="itso_assets.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500 hover:shadow-md hover:border-amber-300 transition-all cursor-pointer">
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Pending Disclosures</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $pending_count; ?></h3>
                 </div>
-                <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500 text-xl">
+                <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500 text-xl group-hover:bg-amber-100 transition">
                     <i class="fas fa-inbox"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500">
+            <a href="itso_assets.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">In Process / Filed</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $active_count; ?></h3>
                 </div>
-                <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-xl">
+                <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-xl group-hover:bg-blue-100 transition">
                     <i class="fas fa-file-signature"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-teal-500">
+            <a href="itso_assets.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-teal-500 hover:shadow-md hover:border-teal-300 transition-all cursor-pointer">
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Registered IPs</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $registered_count; ?></h3>
                 </div>
-                <div class="w-12 h-12 bg-teal-50 rounded-lg flex items-center justify-center text-teal-600 text-xl">
+                <div class="w-12 h-12 bg-teal-50 rounded-lg flex items-center justify-center text-teal-600 text-xl group-hover:bg-teal-100 transition">
                     <i class="fas fa-certificate"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-purple-500">
+            <a href="itso_commercialization.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-purple-500 hover:shadow-md hover:border-purple-300 transition-all cursor-pointer">
                 <div>
                     <p class="text-sm font-medium text-slate-500 mb-1">Pending Commercialization</p>
                     <h3 class="text-3xl font-bold text-slate-800"><?php echo $comm_count; ?></h3>
                 </div>
-                <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 text-xl">
+                <div class="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 text-xl group-hover:bg-purple-100 transition">
                     <i class="fas fa-file-contract"></i>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 border-t-4 border-t-teal-500">

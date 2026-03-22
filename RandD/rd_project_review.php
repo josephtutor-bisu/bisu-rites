@@ -2,8 +2,8 @@
 session_start();
 require_once "../db_connect.php";
 
-// Check if user is logged in AND is R&D Director (Role ID 2)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 2){ 
+// Check if user is logged in AND is R&D Director (2) OR R&D Secretary (5)
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [2, 5])){ 
     header("location: ../login.php"); 
     exit; 
 }
@@ -13,8 +13,8 @@ $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $msg = "";
 $msg_type = ""; // success or error
 
-// 2. Handle Status Updates (Approve, Review, Reject)
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_status'])) {
+// 2. Handle Status Updates (Approve, Review, Reject) - ONLY FOR DIRECTORS
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['new_status']) && $_SESSION['role_id'] == 2) {
     $new_status = $_POST['new_status'];
     
     // Validate the status against our database ENUM
@@ -164,9 +164,14 @@ include "../includes/header.php";
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                         <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Director Actions</h3>
                         
-                        <?php if(in_array($project['status'], ['Draft', 'Completed', 'Published', 'Deferred'])): ?>
+                        <?php if($_SESSION['role_id'] == 5): // IF USER IS A SECRETARY ?>
+                            <div class="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm border border-blue-200">
+                                <i class="fas fa-info-circle mr-2 text-blue-600 text-lg align-middle"></i>
+                                <span>As an R&D Secretary, you have view-only access to this proposal. Only the Director can approve, reject, or change project statuses.</span>
+                            </div>
+                        <?php elseif(in_array($project['status'], ['Draft', 'Completed', 'Published', 'Deferred'])): // IF DIRECTOR BUT STATUS IS LOCKED ?>
                             <p class="text-sm text-slate-500 italic">No review actions available for this current status.</p>
-                        <?php else: ?>
+                        <?php else: // FULL ACCESS FOR DIRECTOR ?>
                             <form method="post" class="space-y-3">
                                 
                                 <?php if($project['status'] == 'Submitted'): ?>

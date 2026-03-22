@@ -2,8 +2,8 @@
 session_start();
 require_once "../db_connect.php";
 
-// Check if user is logged in AND is R&D Director (Role ID 2)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 2){ header("location: ../login.php"); exit; }
+// Check if user is logged in AND is R&D Director (2) OR R&D Secretary (5)
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [2, 5])){ header("location: ../login.php"); exit; }
 
 // Fetch Faculty (Role 8) and Students (Role 9) and count their R&D projects
 $sql = "SELECT u.user_id, u.first_name, u.last_name, u.email, r.role_name, c.college_code,

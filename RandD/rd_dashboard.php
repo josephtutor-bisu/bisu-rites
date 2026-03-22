@@ -2,8 +2,8 @@
 session_start();
 require_once "../db_connect.php";
 
-// Check if user is logged in AND is R&D Director (Role ID 2)
-if(!isset($_SESSION["loggedin"]) || $_SESSION["role_id"] !== 2){ 
+// Check if user is logged in AND is either R&D Director (2) OR R&D Secretary (5)
+if(!isset($_SESSION["loggedin"]) || !in_array($_SESSION["role_id"], [2, 5])){ 
     header("location: ../login.php"); 
     exit; 
 }
@@ -61,7 +61,7 @@ include "../includes/header.php";
                     <i class="fas fa-flask"></i>
                 </div>
                 <div class="text-sm">
-                    <p class="text-slate-500 text-xs">Director Account</p>
+                    <p class="text-slate-500 text-xs"><?php echo $_SESSION['role_id'] == 2 ? 'Director Account' : 'Secretary Account'; ?></p>
                     <p class="font-bold text-slate-800"><?php echo htmlspecialchars($_SESSION["username"]); ?></p>
                 </div>
                 <button class="btn btn-outline btn-sm" onclick="window.location.href='../logout.php'" style="margin-left: auto;">
@@ -73,35 +73,35 @@ include "../includes/header.php";
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500">
-                <div>
-                    <p class="text-sm font-medium text-slate-500 mb-1">Pending Proposals</p>
-                    <h3 class="text-3xl font-bold text-slate-800"><?php echo $pending_count; ?></h3>
-                </div>
-                <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500 text-xl">
-                    <i class="fas fa-file-signature"></i>
-                </div>
+        <a href="rd_projects.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-amber-500 hover:shadow-md hover:border-amber-300 transition-all cursor-pointer">
+            <div>
+                <p class="text-sm font-medium text-slate-500 mb-1">Pending Proposals</p>
+                <h3 class="text-3xl font-bold text-slate-800"><?php echo $pending_count; ?></h3>
             </div>
+            <div class="w-12 h-12 bg-amber-50 rounded-lg flex items-center justify-center text-amber-500 text-xl group-hover:bg-amber-100 transition">
+                <i class="fas fa-file-signature"></i>
+            </div>
+        </a>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500">
-                <div>
-                    <p class="text-sm font-medium text-slate-500 mb-1">Active Researches</p>
-                    <h3 class="text-3xl font-bold text-slate-800"><?php echo $ongoing_count; ?></h3>
-                </div>
-                <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-xl">
-                    <i class="fas fa-spinner fa-spin-pulse"></i>
-                </div>
+        <a href="rd_projects.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-blue-500 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer">
+            <div>
+                <p class="text-sm font-medium text-slate-500 mb-1">Active Researches</p>
+                <h3 class="text-3xl font-bold text-slate-800"><?php echo $ongoing_count; ?></h3>
             </div>
+            <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 text-xl group-hover:bg-blue-100 transition">
+                <i class="fas fa-spinner fa-spin-pulse"></i>
+            </div>
+        </a>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-emerald-500">
-                <div>
-                    <p class="text-sm font-medium text-slate-500 mb-1">Completed / Published</p>
-                    <h3 class="text-3xl font-bold text-slate-800"><?php echo $completed_count; ?></h3>
-                </div>
-                <div class="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 text-xl">
-                    <i class="fas fa-check-circle"></i>
-                </div>
+        <a href="rd_projects.php" class="group bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center justify-between border-l-4 border-l-emerald-500 hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer">
+            <div>
+                <p class="text-sm font-medium text-slate-500 mb-1">Completed / Published</p>
+                <h3 class="text-3xl font-bold text-slate-800"><?php echo $completed_count; ?></h3>
             </div>
+            <div class="w-12 h-12 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 text-xl group-hover:bg-emerald-100 transition">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </a>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
