@@ -30,7 +30,7 @@ if (strpos($current_dir, '/admin') !== false) {
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link rel="stylesheet" href="<?php echo $assets_path; ?>/shadcn.css">
+    <link rel="stylesheet" href="<?php echo $assets_path; ?>/shadcn.css?v=<?php echo filemtime(__DIR__ . '/../assets/shadcn.css'); ?>">
     
     <style>
         :root {

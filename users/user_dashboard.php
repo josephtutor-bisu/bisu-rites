@@ -46,6 +46,11 @@ $page_title = "My Portal - BISU RITES";
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="mr-2 hidden md:inline">Welcome, <strong><?php echo htmlspecialchars($_SESSION["username"]); ?></strong></span>
+                    
+                    <a href="user_downloads.php" class="text-blue-200 hover:text-white transition font-medium text-sm flex items-center bg-blue-700 hover:bg-blue-600 px-3 py-1.5 rounded-md">
+                        <i class="fas fa-file-download mr-1.5"></i> Get Forms
+                    </a>
+                    
                     <a href="user_settings.php" class="text-blue-200 hover:text-white transition" title="Account Settings"><i class="fas fa-cog text-lg"></i></a>
                     <span class="text-blue-400">|</span>
                     <a href="../logout.php" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition font-medium shadow-sm">Logout</a>

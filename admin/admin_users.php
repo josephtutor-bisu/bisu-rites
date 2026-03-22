@@ -20,9 +20,9 @@ $sql = "SELECT u.user_id, u.username, u.first_name, u.last_name, u.role_id, r.ro
 if ($role_filter === 'directors') {
     $sql .= " WHERE u.role_id IN (2, 3, 4)";
 } elseif ($role_filter === 'faculty') {
-    $sql .= " WHERE u.role_id = 5";
+    $sql .= " WHERE u.role_id = 8"; // UPDATED to 8
 } elseif ($role_filter === 'student') {
-    $sql .= " WHERE u.role_id = 6";
+    $sql .= " WHERE u.role_id = 9"; // UPDATED to 9
 }
 $sql .= " ORDER BY u.created_at DESC";
 $result = $conn->query($sql);
@@ -30,8 +30,8 @@ $result = $conn->query($sql);
 // 4. Count by role groups
 $count_all = $conn->query("SELECT COUNT(*) as c FROM users")->fetch_assoc()['c'];
 $count_directors = $conn->query("SELECT COUNT(*) as c FROM users WHERE role_id IN (2, 3, 4)")->fetch_assoc()['c'];
-$count_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role_id = 5")->fetch_assoc()['c'];
-$count_students = $conn->query("SELECT COUNT(*) as c FROM users WHERE role_id = 6")->fetch_assoc()['c'];
+$count_faculty = $conn->query("SELECT COUNT(*) as c FROM users WHERE role_id = 8")->fetch_assoc()['c']; // UPDATED to 8
+$count_students = $conn->query("SELECT COUNT(*) as c FROM users WHERE role_id = 9")->fetch_assoc()['c']; // UPDATED to 9
 
 $page_title = "User Management";
 include "../includes/header.php";
@@ -166,6 +166,11 @@ include "../includes/header.php";
                                     $username = htmlspecialchars($row["username"]);
                                     $roleId = $row["role_id"];
                                     $userId = $row["user_id"];
+                                    
+                                    // Always fetch fresh role name from system_roles
+                                    $roleQuery = $conn->query("SELECT role_name FROM system_roles WHERE role_id = $roleId LIMIT 1");
+                                    $roleSet = $roleQuery->fetch_assoc();
+                                    $roleName = $roleSet ? $roleSet["role_name"] : "Unknown";
                                     
                                     $roleBadgeClass = 'badge-primary';
                                     if ($roleId == 1) $roleBadgeClass = 'badge-destructive';

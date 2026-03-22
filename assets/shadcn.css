@@ -113,8 +113,8 @@
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-dark) !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  background-color: var(--warning) !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
   color: white !important;
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
   opacity: 1 !important;
@@ -122,6 +122,8 @@
   font-size: 0.875rem !important;
   line-height: 1.2 !important;
   min-height: auto;
+  visibility: visible !important;
+  overflow: visible !important;
 }
 
 .btn-primary:hover * {
@@ -130,6 +132,8 @@
   filter: none !important;
   font-size: inherit !important;
   line-height: 1.2 !important;
+  visibility: visible !important;
+  overflow: visible !important;
 }
 
 .btn-primary:active {
@@ -159,6 +163,8 @@
   font-size: 0.875rem !important;
   line-height: 1.2 !important;
   min-height: auto;
+  visibility: visible !important;
+  overflow: visible !important;
 }
 
 .btn-secondary:hover * {
@@ -167,6 +173,8 @@
   filter: none !important;
   font-size: inherit !important;
   line-height: 1.2 !important;
+  visibility: visible !important;
+  overflow: visible !important;
 }
 
 .btn-destructive {
@@ -187,6 +195,8 @@
   font-size: 0.875rem !important;
   line-height: 1.2 !important;
   min-height: auto;
+  visibility: visible !important;
+  overflow: visible !important;
 }
 
 .btn-destructive:hover * {
@@ -195,6 +205,8 @@
   filter: none !important;
   font-size: inherit !important;
   line-height: 1.2 !important;
+  visibility: visible !important;
+  overflow: visible !important;
 }
 
 .btn-outline {
@@ -274,18 +286,143 @@
 .header-actions .btn:hover {
   opacity: 1 !important;
   filter: none !important;
+  visibility: visible !important;
+  text-decoration: none !important;
+  line-height: 1.2 !important;
 }
 
 .header-actions .btn * {
   opacity: 1 !important;
   filter: none !important;
   color: inherit !important;
+  display: inherit !important;
+  visibility: visible !important;
+  text-decoration: inherit !important;
+  line-height: inherit !important;
 }
 
 .header-actions .btn:hover * {
   opacity: 1 !important;
   filter: none !important;
   color: inherit !important;
+  display: inherit !important;
+  visibility: visible !important;
+  text-decoration: inherit !important;
+}
+
+/* AGGRESSIVE: Force text visibility on any button with primary class in header */
+.header-actions .btn-primary,
+.header-actions .btn-primary * {
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+.header-actions .btn-primary:hover,
+.header-actions .btn-primary:hover * {
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  display: inline-flex !important;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* SUPER AGGRESSIVE: Lock down icon elements specifically */
+.header-actions .btn i,
+.header-actions .btn-primary i {
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  display: inline !important;
+  margin: 0 0.5rem 0 0 !important;
+  font-size: 0.875rem !important;
+}
+
+.header-actions .btn:hover i,
+.header-actions .btn-primary:hover i {
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  display: inline !important;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Prevent parent hover from affecting button */
+.header-actions {
+  pointer-events: none;
+}
+
+.header-actions .btn {
+  pointer-events: auto;
+}
+
+.header-actions:hover .btn,
+.header-actions:hover .btn * {
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+}
+
+/* ULTIMATE: Force button and all content to remain visible */
+.header-actions .btn-primary {
+  background-color: var(--primary) !important;
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  display: inline-flex !important;
+  min-width: auto !important;
+  min-height: 2.25rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.2 !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+.header-actions .btn-primary * {
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  display: inline !important;
+  overflow: visible !important;
+  font-size: 0.875rem !important;
+}
+
+.header-actions .btn-primary:hover {
+  background-color: var(--warning) !important;
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
+  font-size: 0.875rem !important;
+}
+
+.header-actions .btn-primary:hover * {
+  color: white !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  filter: none !important;
+  display: inline !important;
+  font-size: 0.875rem !important;
+}
+
+/* Override ALL Tailwind hover: classes that might be on the button */
+.header-actions a.btn-primary[class*="hover:"] {
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.header-actions a.btn-primary[class*="hover:"]:hover {
+  opacity: 1 !important;
+  filter: none !important;
 }
 
 /* ==================== CARD COMPONENT ==================== */

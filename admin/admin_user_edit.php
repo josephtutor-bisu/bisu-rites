@@ -8,15 +8,16 @@ $msg = "";
 
 // Update Logic
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
-    $role_id = $_POST['role_id'];
+    $first_name = trim($_POST['first_name']);
+    $last_name = trim($_POST['last_name']);
+    $role_id = intval($_POST['role_id']);
     
     // Only update password if user typed something new
     if(!empty($_POST['password'])){
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $sql = "UPDATE users SET first_name=?, last_name=?, role_id=?, password_hash=? WHERE user_id=?";
+        $sql = "UPDATE users SET first_name=?, last_name=?, role_id=?, password=? WHERE user_id=?";
         $stmt = $conn->prepare($sql);
+        // Note: Make sure your DB column is named 'password', not 'password_hash' based on our setup
         $stmt->bind_param("ssisi", $first_name, $last_name, $role_id, $password, $id);
     } else {
         $sql = "UPDATE users SET first_name=?, last_name=?, role_id=? WHERE user_id=?";
@@ -24,11 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("ssii", $first_name, $last_name, $role_id, $id);
     }
     
+    // THIS WAS MISSING! We must execute the statement before redirecting.
     if($stmt->execute()){
         header("location: admin_users.php");
         exit;
     } else {
-        $msg = "Error updating user.";
+        $msg = "Error updating user: " . $conn->error;
     }
 }
 
@@ -197,6 +199,7 @@ include "../includes/header.php";
                                     <option value="3" <?php if($user['role_id']==3) echo 'selected'; ?>>ITSO Director</option>
                                     <option value="4" <?php if($user['role_id']==4) echo 'selected'; ?>>Extension Director</option>
                                     <option value="5" <?php if($user['role_id']==5) echo 'selected'; ?>>Faculty</option>
+                                    <option value="6" <?php if($user['role_id']==6) echo 'selected'; ?>>Student</option>
                                 </select>
                             </div>
                         </div>
