@@ -164,7 +164,6 @@ include "../includes/header.php";
                                 while($row = $result->fetch_assoc()) {
                                     $fullName = htmlspecialchars($row["first_name"] . " " . $row["last_name"]);
                                     $username = htmlspecialchars($row["username"]);
-                                    $roleName = $row["role_name"];
                                     $roleId = $row["role_id"];
                                     $userId = $row["user_id"];
                                     
